@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!--
+
+    Copyright (C) 2005-2013, Stefan Strömberg <stefangs@nethome.nu>
+
+    This file is part of OpenNetHome (http://www.nethome.nu).
+
+    OpenNetHome is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenNetHome is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<shortcuts>
+  <programGroup defaultName="NetHome" location="applications"/>
+  <shortcut
+     name="ProtocolAnalyzer"
+     programGroup="yes"
+     desktop="no"
+     applications="no"
+     startMenu="no"
+     startup="no"
+     target="$INSTALL_PATH/analyzer.sh"
+     commandLine=""
+     workingDirectory="$INSTALL_PATH"
+     description="This starts the ProtocolAnalyzer"
+     iconFile="$INSTALL_PATH/lib/analyzer.png"
+     iconIndex="0"
+     type="Application"
+     encoding="UTF-8"
+     terminal="false"
+     KdeSubstUID="false"
+     initialState="normal">
+   </shortcut>
+  <shortcut
+     name="Uninstall"
+     programGroup="yes"
+     desktop="no"
+     applications="no"
+     startMenu="no"
+     startup="no"
+     target="$INSTALL_PATH/Uninstaller/uninstall.sh"
+     commandLine=""
+     workingDirectory="$INSTALL_PATH/Uninstaller"
+     description="This uninstalls the ProtocolAnalyzer"
+     iconFile="$INSTALL_PATH/lib/uninstall.png"
+     iconIndex="0"
+     type="Application"
+     encoding="UTF-8"
+     terminal="false"
+     KdeSubstUID="false"
+     initialState="noShow">
+   </shortcut>
+</shortcuts>

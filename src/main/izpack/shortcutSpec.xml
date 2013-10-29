@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!--
+
+    Copyright (C) 2005-2013, Stefan Strömberg <stefangs@nethome.nu>
+
+    This file is part of OpenNetHome (http://www.nethome.nu).
+
+    OpenNetHome is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenNetHome is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<shortcuts>
+    <programGroup defaultName="NetHome"
+                  location="applications"/>
+    <shortcut
+            name="ProtocolAnalyzer"
+            target="$INSTALL_PATH\analyzer.bat"
+            commandLine=""
+            workingDirectory="$INSTALL_PATH"
+            description="This starts the ProtocolAnalyzer"
+            iconFile="$INSTALL_PATH\lib\analyzer.ico"
+            initialState="normal"
+            programGroup="yes"
+            desktop="no"
+            applications="no"
+            startMenu="no"
+            startup="no">
+    </shortcut>
+    <!--
+    <shortcut
+            name="ProtocolAnalyzer Documentation"
+            url="http://wiki.nethome.nu/doku.php/analyzer/manual/start"
+            commandLine=""
+            workingDirectory="$INSTALL_PATH"
+            description="This opens the online documentation"
+            iconFile="$INSTALL_PATH\lib\analyzer.ico"
+            initialState="normal"
+            programGroup="yes"
+            desktop="no"
+            applications="no"
+            startMenu="no"
+            startup="no">
+    </shortcut>
+    -->
+    <shortcut
+            name="Uninstall ProtocolAnalyzer"
+            target="$INSTALL_PATH\Uninstaller\uninstall.bat"
+            commandLine=""
+            workingDirectory="$INSTALL_PATH\Uninstaller"
+            description="This uninstalls the ProtocolAnalyzer"
+            iconFile="$INSTALL_PATH\lib\uninstall.ico"
+            initialState="noShow"
+            programGroup="yes"
+            desktop="no"
+            applications="no"
+            startMenu="no"
+            startup="no">
+    </shortcut>
+</shortcuts>

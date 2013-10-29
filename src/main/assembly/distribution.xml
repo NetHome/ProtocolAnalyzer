@@ -1,0 +1,137 @@
+<!--
+
+    Copyright (C) 2005-2013, Stefan Strömberg <stefangs@nethome.nu>
+
+    This file is part of OpenNetHome (http://www.nethome.nu).
+
+    OpenNetHome is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenNetHome is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>distribution</id>
+    <formats>
+        <format>dir</format>
+    </formats>
+    <fileSets>
+        <!-- The plugin example -->
+        <fileSet>
+            <outputDirectory>/plugins/example</outputDirectory>
+            <directory>${basedir}/src/site/example</directory>
+            <filtered>true</filtered>
+        </fileSet>
+        <!-- The SWT files for all OS:s -->
+        <fileSet>
+            <outputDirectory>/os</outputDirectory>
+            <directory>${basedir}/src/main/lib/swt</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <!-- Start scripts for all OS:s -->
+        <fileSet>
+            <outputDirectory>/</outputDirectory>
+            <directory>${basedir}/src/main/scripts/launch</directory>
+            <filtered>true</filtered>
+            <includes>
+                <include>*.*</include>
+            </includes>
+        </fileSet>
+        <!-- rxtx library files for MAC -->
+        <fileSet>
+            <outputDirectory>/os</outputDirectory>
+            <directory>${basedir}/src/main/lib/rxtx/Mac_OS_X</directory>
+            <includes>
+                <include>*.*</include>
+            </includes>
+        </fileSet>
+        <!-- Copy the izpack installation description so we can filter it before it is used -->
+        <fileSet>
+            <outputDirectory>/installation</outputDirectory>
+            <directory>${basedir}/src/main/izpack</directory>
+            <filtered>true</filtered>
+            <includes>
+                <include>*.xml</include>
+                <include>*.html</include>
+                <include>*.txt</include>
+                <include>*.manifest</include>
+            </includes>
+        </fileSet>
+        <!-- Copy other izpack installation resources that should not be filtered -->
+        <fileSet>
+            <outputDirectory>/installation</outputDirectory>
+            <directory>${basedir}/src/main/izpack</directory>
+            <includes>
+                <include>*.dll</include>
+                <include>*.bat</include>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>/lib</outputDirectory>
+            <directory>${basedir}/src/main/izpack</directory>
+            <includes>
+                <include>*.ico</include>
+                <include>*.png</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+    <files>
+        <!-- rxtx library file for 32 bits Linux -->
+        <file>
+            <source>${basedir}/src/main/lib/rxtx/Linux/i686-unknown-linux-gnu/librxtxSerial.so</source>
+            <outputDirectory>/os</outputDirectory>
+            <destName>librxtxSerial_x86_32.so</destName>
+        </file>
+        <!-- rxtx library file for 64 bits Linux -->
+        <file>
+            <source>${basedir}/src/main/lib/rxtx/Linux/x86_64-unknown-linux-gnu/librxtxSerial.so</source>
+            <outputDirectory>/os</outputDirectory>
+            <destName>librxtxSerial_x86_64.so</destName>
+        </file>
+        <!-- rxtx library file for 32 bits Windows -->
+        <file>
+            <source>${basedir}/src/main/lib/rxtx/Windows/i368-mingw32/rxtxSerial.dll</source>
+            <outputDirectory>/os</outputDirectory>
+            <destName>rxtxSerial_32.dll</destName>
+        </file>
+        <!-- rxtx library file for 64 bits Windwos -->
+        <file>
+            <source>${basedir}/src/main/lib/rxtx/Windows/win-x64/rxtxSerial.dll</source>
+            <outputDirectory>/os</outputDirectory>
+            <destName>rxtxSerial_64.dll</destName>
+        </file>
+    </files>
+    <dependencySets>
+        <!-- include all runtime jars -->
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <excludes>
+                <exclude>org.eclipse:swt</exclude>
+            </excludes>
+        </dependencySet>
+        <dependencySet>
+            <!-- Have to have a separate dependency set just for the final jar to avoid version in the name -->
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*:${artifact.artifactId}*</include>
+            </includes>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <useProjectArtifact>true</useProjectArtifact>
+        </dependencySet>
+    </dependencySets>
+</assembly>

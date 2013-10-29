@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+<!--
+
+    Copyright (C) 2005-2013, Stefan StrÃ¶mberg <stefangs@nethome.nu>
+
+    This file is part of OpenNetHome (http://www.nethome.nu).
+
+    OpenNetHome is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenNetHome is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<installation version="1.0">
+
+    <info>
+        <appname>${project.name}</appname>
+        <appversion>${version}</appversion>
+        <authors>
+            <author name="Stefan Strömberg" email="homeserver@nethome.nu"/>
+        </authors>
+        <url>http://www.nethome.nu</url>
+    </info>
+
+    <guiprefs width="650" height="420" resizable="yes">
+        <modifier key="useHeadingPanel" value="yes"/>
+        <modifier key="useHeadingForSummary" value="yes"/>
+        <modifier key="headingImageOnLeft" value="yes"/>
+        <modifier key="headingLineCount" value="2"/>
+        <modifier key="headingFontSize" value="1.5"/>
+        <modifier key="headingBackgroundColor" value="0x00ffffff"/>
+        <modifier key="headingPanelCounter" value="text"/>
+        <modifier key="headingPanelCounterPos" value="inHeading"/>
+    </guiprefs>
+
+
+
+    <locale>
+        <langpack iso3="eng"/>
+    </locale>
+
+    <resources>
+        <res id="LicencePanel.licence" src="installation/gplv3.txt"/>
+        <res id="InfoPanel.info" src="readme.txt"/>
+        <res id="shortcutSpec.xml" src="installation/shortcutSpec.xml"/>
+        <res id="HTMLHelloPanel.info" src="installation/hello.html"/>
+        <res id="Unix_shortcutSpec.xml" src="installation/unix_shortcutSpec.xml"/>
+        <res id="Heading.image" src="lib/analyzer_large.png"/>
+        <res id="analyzer_back.png" src="lib/analyzer_back.png"/>
+
+    </resources>
+
+    <native type="izpack" name="ShellLink.dll" src="installation/ShellLink.dll">
+        <os family="windows" />
+    </native>
+    <native type="izpack" name="ShellLink_x64.dll" src="installation/ShellLink_x64.dll">
+        <os family="windows" />
+    </native>
+
+    <panels>
+        <panel classname="HTMLHelloPanel"/>
+        <panel classname="LicencePanel"/>
+        <panel classname="TargetPanel"/>
+        <panel classname="PacksPanel"/>
+        <panel classname="ShortcutPanel"/>
+        <panel classname="InstallPanel"/>
+        <panel classname="FinishPanel"/>
+    </panels>
+
+    <packs>
+        <pack name="Application" required="yes" id="Application">
+            <description>The executables</description>
+            <file src="lib" targetdir="$INSTALL_PATH"/>
+            <file src="plugins" targetdir="$INSTALL_PATH"/>
+            <file src="readme.txt" targetdir="$INSTALL_PATH"/>
+        </pack>
+        <pack name="Windows 32 bit drivers" required="no" preselected="no">
+            <os family="windows"/>
+            <description>Operating system specific drivers for 32 bit Windows. You must only choose the version of the drivers that matches the installation of your operating system.</description>
+            <singlefile src="os/rxtxSerial_32.dll" target="$INSTALL_PATH/lib/rxtxSerial.dll"/>
+            <singlefile src="os/swt-win32-x86.jar" target="$INSTALL_PATH/lib/swt.jar"/>
+            <singlefile src="analyzer_generic.bat" target="$INSTALL_PATH/analyzer.bat"/>
+            <singlefile src="installation/uninstall.bat" target="$INSTALL_PATH/Uninstaller/uninstall.bat"/>
+        </pack>
+        <pack name="Windows 64 bit drivers" required="no">
+            <os family="windows"/>
+            <description>Operating system specific drivers for 64 bit Windows. You must only choose the version of the drivers that matches the installation of your operating system.</description>
+            <singlefile src="os/rxtxSerial_64.dll" target="$INSTALL_PATH/lib/rxtxSerial.dll"/>
+            <singlefile src="os/swt-win32-win32-x86_64.jar" target="$INSTALL_PATH/lib/swt.jar"/>
+            <singlefile src="analyzer_generic.bat" target="$INSTALL_PATH/analyzer.bat"/>
+            <singlefile src="installation/uninstall.bat" target="$INSTALL_PATH/Uninstaller/uninstall.bat"/>
+        </pack>
+        <pack name="Linux 32 bit drivers" required="no">
+            <os family="unix"/>
+            <description>Operating system specific drivers for 32 bit Linux. You must only choose the version of the drivers that matches the installation of your operating system.</description>
+            <singlefile src="os/librxtxSerial_x86_32.so" target="$INSTALL_PATH/lib/librxtxSerial.so"/>
+            <singlefile src="os/swt-gtk-linux-x86.jar" target="$INSTALL_PATH/lib/swt.jar"/>
+            <singlefile src="analyzer_generic.sh" target="$INSTALL_PATH/analyzer.sh"/>
+            <singlefile src="installation/uninstall.sh" target="$INSTALL_PATH/Uninstaller/uninstall.sh"/>
+            <executable targetfile="$INSTALL_PATH/analyzer.sh" stage="never"/>
+            <executable targetfile="$INSTALL_PATH/Uninstaller/uninstall.sh" stage="never"/>
+        </pack>
+        <pack name="Linux 64 bit drivers" required="no"  preselected="no">
+            <os family="unix"/>
+            <description>Operating system specific drivers for 64 bit Linux. You must only choose the version of the drivers that matches the installation of your operating system.</description>
+            <singlefile src="os/librxtxSerial_x86_64.so" target="$INSTALL_PATH/lib/librxtxSerial.so"/>
+            <singlefile src="os/swt-gtk-linux-x86_64.jar" target="$INSTALL_PATH/lib/sw.jar"/>
+            <singlefile src="analyzer_generic.sh" target="$INSTALL_PATH/analyzer.sh"/>
+            <singlefile src="installation/uninstall.sh" target="$INSTALL_PATH/Uninstaller/uninstall.sh"/>
+            <executable targetfile="$INSTALL_PATH/analyzer.sh" stage="never"/>
+            <executable targetfile="$INSTALL_PATH/Uninstaller/uninstall.sh" stage="never"/>
+        </pack>
+        <pack name="MAC Cocoa drivers" required="no" preselected="no">
+            <os family="mac"/>
+            <description>Operating system specific drivers for 32 bit MAC Cocoa. You must only choose the version of the drivers that matches the installation of your operating system.</description>
+            <file src="os/librxtxSerial.jnilib" targetdir="$INSTALL_PATH/lib"/>
+            <singlefile src="os/swt-cocoa-macosx.jar" target="$INSTALL_PATH/lib/sw.jar"/>
+            <singlefile src="analyzer_macosx_cocoa_generic.sh" target="$INSTALL_PATH/analyzer.sh"/>
+            <singlefile src="installation/uninstall.sh" target="$INSTALL_PATH/Uninstaller/uninstall.sh"/>
+            <executable targetfile="$INSTALL_PATH/analyzer.sh" stage="never"/>
+            <executable targetfile="$INSTALL_PATH/Uninstaller/uninstall.sh" stage="never"/>
+        </pack>
+        <pack name="MAC Cocoa 64 bit drivers" required="no" preselected="yes">
+            <os family="mac"/>
+            <description>Operating system specific drivers for 64 bit MAC Cocoa. You must only choose the version of the drivers that matches the installation of your operating system.</description>
+            <file src="os/librxtxSerial.jnilib" targetdir="$INSTALL_PATH/lib"/>
+            <singlefile src="os/swt-cocoa-macosx-x86_64.jar" target="$INSTALL_PATH/lib/swt.jar"/>
+            <singlefile src="analyzer_macosx_cocoa_64_generic.sh" target="$INSTALL_PATH/analyzer.sh"/>
+            <singlefile src="installation/uninstall.sh" target="$INSTALL_PATH/Uninstaller/uninstall.sh"/>
+            <executable targetfile="$INSTALL_PATH/analyzer.sh" stage="never"/>
+            <executable targetfile="$INSTALL_PATH/Uninstaller/uninstall.sh" stage="never"/>
+        </pack>
+        <pack name="MAC Carbon drivers" required="no" preselected="no">
+            <os family="mac"/>
+            <description>Operating system specific drivers for MAC Carbon. You must only choose the version of the drivers that matches the installation of your operating system.</description>
+            <file src="os/librxtxSerial.jnilib" targetdir="$INSTALL_PATH/lib"/>
+            <singlefile src="os/swt-carbon-macosx.jar" target="$INSTALL_PATH/lib/sw.jar"/>
+            <singlefile src="analyzer_macosx_carbon_generic.sh" target="$INSTALL_PATH/analyzer.sh"/>
+            <singlefile src="installation/uninstall.sh" target="$INSTALL_PATH/Uninstaller/uninstall.sh"/>
+            <executable targetfile="$INSTALL_PATH/analyzer.sh" stage="never"/>
+            <executable targetfile="$INSTALL_PATH/Uninstaller/uninstall.sh" stage="never"/>
+        </pack>
+    </packs>
+</installation>

@@ -1,0 +1,55 @@
+<!--
+
+    Copyright (C) 2005-2013, Stefan Strömberg <stefangs@nethome.nu>
+
+    This file is part of OpenNetHome (http://www.nethome.nu).
+
+    OpenNetHome is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenNetHome is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>${project.build.directory}/${package.jar}</jar>
+  <outfile>${project.build.directory}/ProtocolAnalyzerInst.exe</outfile>
+  <errTitle>Java not yet installed, please install Java first</errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest>${staging.dir}/installation/ProtocolAnalyzerInst.exe.manifest</manifest>
+  <icon>${staging.dir}/lib/analyzer.ico</icon>
+  <jre>
+    <path></path>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+  </jre>
+  <versionInfo>
+    <fileVersion>${version}.0.0</fileVersion>
+    <txtFileVersion>${version}</txtFileVersion>
+    <fileDescription>Protocol Analyzer Tool</fileDescription>
+    <copyright>(c) Stefan Strömberg</copyright>
+    <productVersion>${version}.0.0</productVersion>
+    <txtProductVersion>${version}</txtProductVersion>
+    <productName>ProtocolAnalyzer</productName>
+    <companyName>NetHome</companyName>
+    <internalName>ProtocolAnalyzer</internalName>
+    <originalFilename>ProtocolAnalyzerInst.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>
