@@ -119,6 +119,7 @@
                     <!-- NOTE! The install.xml is copied here by the assembly-plugin so it can be filtered. Note that
        it cannot be placed directly under the staging.dir since the build fails then!! -->
                     <descriptor>${staging.dir}/installation/install.xml</descriptor>
+                    <descriptorEncoding>UTF-8</descriptorEncoding>
                     <installerFile>${basedir}/target/${package.jar}</installerFile>
                 </configuration>
                 <executions>
