@@ -225,7 +225,7 @@ public class Main implements ProtocolDecoderSink {
 	 */
 	public void loadAudioPreferences() {
 		Preferences p = Preferences.userNodeForPackage(this.getClass());
-		m_AudioSampler.setSource(p.getInt("SourceNumber", 0));
+		m_AudioSampler.setSource(p.getInt("SourceNumber", 0) >= 0 ? p.getInt("SourceNumber", 0) : 0);
 		if (p.getBoolean("Mono", true)) {
 			m_AudioSampler.setChannel(Channel.MONO);
 		} else {
@@ -233,9 +233,9 @@ public class Main implements ProtocolDecoderSink {
 		}
 		m_FlankDetector.setFlankSwing(p.getInt("FlankSwing", 80));
 		m_FlankDetector.setFlankLength(p.getInt("FlankLength", 3));
-		m_FlankDetector.setFlankHoldoff(p.getInt("FlankHoldoff", 15));
-		m_FlankDetector.setPulseWidthCompensation(p.getInt("PulseWidthCompensation", 60));
-		m_Filter.setActive(p.getBoolean("UseFilter", true));
+		m_FlankDetector.setFlankHoldoff(p.getInt("FlankHoldoff", 1));
+		m_FlankDetector.setPulseWidthCompensation(p.getInt("PulseWidthCompensation", 0));
+		m_Filter.setActive(p.getBoolean("UseFilter", false));
 	}
 	
 	/**

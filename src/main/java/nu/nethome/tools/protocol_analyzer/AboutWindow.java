@@ -117,19 +117,19 @@ public class AboutWindow extends org.eclipse.swt.widgets.Dialog {
 				{
 					label4 = new Label(composite1, SWT.NONE);
 					label4.setText("Stefan Strömberg (c) 2010-2013");
-					label4.setBounds(179, 70, 152, 23);
+					label4.setBounds(170, 70, 200, 23);
 					label4.setBackground(SWTResourceManager.getColor(255, 255, 255));
 				}
 				{
 					label5 = new Label(composite1, SWT.NONE);
-					label5.setText("www.nethome.nu");
-					label5.setBounds(204, 99, 100, 30);
+					label5.setText("http://www.nethome.nu");
+					label5.setBounds(180, 99, 200, 30);
 					label5.setBackground(SWTResourceManager.getColor(255, 255, 255));
 				}
 			}
 			dialogShell.layout();
 			dialogShell.pack();			
-			dialogShell.setSize(347, 259);
+			dialogShell.setSize(400, 259);
 			dialogShell.setText("About Protocol Analyzer");
 			dialogShell.setLocation(getParent().toDisplay(100, 100));
 			dialogShell.open();
