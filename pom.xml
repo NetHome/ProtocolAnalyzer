@@ -7,11 +7,13 @@
     <packaging>jar</packaging>
     <version>2.0-SNAPSHOT</version>
     <properties>
+        <dot.version>2.0.0.0</dot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <izpack-standalone.version>4.3.2</izpack-standalone.version> <!-- 4.3.4-->
+        <izpack-standalone.version>4.3.2</izpack-standalone.version>
+        <!-- 4.3.4-->
         <staging.dir>${project.build.directory}/analyzer-distribution/analyzer</staging.dir>
         <package.jar>setup${project.artifactId}.jar</package.jar>
-        <package.exe>setup${project.artifactId}.exe</package.exe>
+        <package.exe>ProtocolAnalyzerIn.exe</package.exe>
         <utils.version>1.0</utils.version>
         <coders.version>1.0</coders.version>
     </properties>
@@ -155,42 +157,39 @@
                 </executions>
             </plugin>
             <plugin>
-              <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-              <artifactId>launch4j-plugin</artifactId>
-              <version>1.5.0.0</version>
-              <executions>
-                <execution>
-                  <id>launch4j</id>
-                  <phase>install</phase>
-                  <goals>
-                    <goal>launch4j</goal>
-                  </goals>
-                  <configuration>
-                    <headerType>gui</headerType>
-                    <outfile>${project.build.directory}/${package.exe}</outfile>
-                    <jar>${project.build.directory}/${package.jar}</jar>
-                    <!-- the manifest attribute does not seem to work for the Maven plugin. This is unfortunate
-                    since I need this for elevation of user rights. Doing that via exe-name (setup...) gives warning
-                    after the installation on Windows7 since it expects the installer to update "installed programs" -->
-                    <manifest>${staging.dir}/installation/ProtocolAnalyzerInst.exe.manifest</manifest>
-                    <errTitle>alakai</errTitle>
-                    <jre>
-                      <minVersion>1.5.0</minVersion>
-                    </jre>
-                    <versionInfo>
-                      <fileVersion>1.2.3.4</fileVersion>
-                      <txtFileVersion>txt file version</txtFileVersion>
-                      <fileDescription>a description</fileDescription>
-                      <copyright>my copyright</copyright>
-                      <productVersion>4.3.2.1</productVersion>
-                      <txtProductVersion>txt product version</txtProductVersion>
-                      <productName>product name</productName>
-                      <internalName>internal name</internalName>
-                      <originalFilename>original.exe</originalFilename>
-                    </versionInfo>
-                  </configuration>
-                </execution>
-              </executions>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>1.5.2</version>
+                <executions>
+                    <execution>
+                        <id>launch4j</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <outfile>${project.build.directory}/${package.exe}</outfile>
+                            <jar>${project.build.directory}/${package.jar}</jar>
+                            <manifest>${staging.dir}/installation/ProtocolAnalyzerIn.exe.manifest</manifest>
+                            <errTitle>alakai</errTitle>
+                            <jre>
+                                <minVersion>1.5.0</minVersion>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>${dot.version}</fileVersion>
+                                <txtFileVersion>${project.version}</txtFileVersion>
+                                <fileDescription>ProtocolAnalyzer</fileDescription>
+                                <copyright>(C) 2010-2013 Stefan Strömberg</copyright>
+                                <productVersion>${dot.version}</productVersion>
+                                <txtProductVersion>${project.version}</txtProductVersion>
+                                <productName>ProtocolAnalyzer</productName>
+                                <internalName>ProtocolAnalyzer</internalName>
+                                <originalFilename>${package.exe}</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -210,29 +209,29 @@
             <artifactId>jfreechart-swt</artifactId>
             <version>1.0.9</version>
         </dependency>
-            <dependency>
-                <groupId>org.rxtx</groupId>
-                <artifactId>rxtx</artifactId>
-                <version>2.1.7</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.8.1</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>1.8.5</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-all</artifactId>
-                <version>1.1</version>
-                <scope>test</scope>
-            </dependency>
+        <dependency>
+            <groupId>org.rxtx</groupId>
+            <artifactId>rxtx</artifactId>
+            <version>2.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.codehaus.izpack</groupId>
             <artifactId>izpack-standalone-compiler</artifactId>
