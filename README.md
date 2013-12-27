@@ -50,6 +50,10 @@ To build the entire deployment package you issue:
 
     mvn install
 
+To also build the installer, use the profile "installer":
+
+    mvn install -Pinstaller
+
 Open from IntelliJ
 ------------------
 

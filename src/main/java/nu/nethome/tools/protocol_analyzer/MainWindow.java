@@ -230,7 +230,7 @@ public class MainWindow implements ProtocolDecoderSink {
 		m_StatusText.setText(statusText);
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		gridData.grabExcessVerticalSpace = false;
-		gridData.widthHint = 80;
+		gridData.widthHint = 180;
 		m_StatusText.setLayoutData(gridData);
 
 		// Create the Level meter with layout
@@ -672,7 +672,17 @@ public void updateWindowState(boolean isConfigurationChange) {
 	m_StartScanningButton.setEnabled(!isScanning);
 	m_StopScanningButton.setEnabled(isScanning);
 	m_FreeSampleButton.setEnabled(isScanning && (m_Model.getSignalHardware() == 0));
-	m_StatusText.setText(isScanning ? Messages.getString("MainWindow.Scanning") : Messages.getString("MainWindow.Stopped")); //$NON-NLS-1$ //$NON-NLS-2$
+    String statusText;
+    if (!isScanning) {
+        statusText = Messages.getString("MainWindow.Stopped");
+    } else if (m_Model.getSignalHardware() == Main.AUDIO_SAMPLER) {
+        statusText = Messages.getString("MainWindow.SamplingAt") //$NON-NLS-1$
+                + Float.toString(m_Model.getAudioSampler().getSampleRate())
+                + Messages.getString("MainWindow.Hz"); //$NON-NLS-1$
+    } else {
+        statusText = Messages.getString("MainWindow.Scanning");
+    }
+	m_StatusText.setText(statusText);
 	if (isConfigurationChange) {
 		m_HWIcon.setImage(getToolImage(m_Model.getSignalHardware() == 0 ? "microphone16.png" : "memorystick16.png" )); //$NON-NLS-1$ //$NON-NLS-2$
 	}

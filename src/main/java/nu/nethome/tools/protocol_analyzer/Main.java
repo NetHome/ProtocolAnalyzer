@@ -36,7 +36,10 @@ import java.util.prefs.Preferences;
 
 public class Main implements ProtocolDecoderSink {
 
-	protected int m_SignalHardware = 1;
+    private static final float STANDARD_SAMPLE_FREQUENCY = 44100.0F;
+    public static final int AUDIO_SAMPLER = 0;
+    public static final int CUL_SAMPLER = 1;
+    protected int m_SignalHardware = 1;
 	protected PulseProtocolPort m_ProtocolPorts[];
 	private MainWindow m_View;
 	private String m_ExportTemplate = "#PROTOCOL#: #NAME# = #BYTE0HEX#, #BYTE1HEX#";
@@ -64,7 +67,7 @@ public class Main implements ProtocolDecoderSink {
 		m_View.reportLevel(level);
 	}
 
-	public void go(){
+	public void go(float sampleRate){
 
         // Load plugins
         handlePlugins();
@@ -123,6 +126,7 @@ public class Main implements ProtocolDecoderSink {
 		m_AudioSampler = new AudioProtocolPort(inverter);
 		// Load last settings
 		loadAudioPreferences();
+        m_AudioSampler.setSampleRate(sampleRate);
 		
 		// Create our CUL-Port and attach the decoders directly to it.
 		m_CULPort = new CULProtocolPort(m_ProtocolDecoders);
@@ -132,8 +136,8 @@ public class Main implements ProtocolDecoderSink {
 		m_Raw.setSampleRate((int)m_AudioSampler.getSampleRate());
 		
 		m_ProtocolPorts = new PulseProtocolPort[2];
-		m_ProtocolPorts[0] = m_AudioSampler;
-		m_ProtocolPorts[1] = m_CULPort;
+		m_ProtocolPorts[AUDIO_SAMPLER] = m_AudioSampler;
+		m_ProtocolPorts[CUL_SAMPLER] = m_CULPort;
 		m_SignalHardware = p.getInt("SignalHardware", 0);
 		
 	    // Create the display for the main window
@@ -167,8 +171,12 @@ public class Main implements ProtocolDecoderSink {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+        float sampleRate = STANDARD_SAMPLE_FREQUENCY;
 		Main application = new Main();
-		application.go();
+        if (args.length == 2 && args[0].equals("-rate")) {
+            sampleRate = Float.parseFloat(args[1]);
+        }
+		application.go(sampleRate);
 	}
 
     private void handlePlugins() {
