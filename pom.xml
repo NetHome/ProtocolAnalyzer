@@ -14,7 +14,7 @@
         <staging.dir>${project.build.directory}/analyzer-distribution/analyzer</staging.dir>
         <package.jar>setup${project.artifactId}.jar</package.jar>
         <package.exe>ProtocolAnalyzerIn.exe</package.exe>
-        <utils.version>1.0</utils.version>
+        <utils.version>1.1-SNAPSHOT</utils.version>
         <coders.version>1.0</coders.version>
     </properties>
     <build>
