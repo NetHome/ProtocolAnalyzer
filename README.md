@@ -11,7 +11,7 @@ and look in the Plugin folder to get information on how to write plugins for new
 Development Environment
 -----------------------
 
-Dependencies: Java SE SDK 1.5, Maven 2, Coders-module, Utils-module.
+Dependencies: Java SE SDK 1.6, Maven 2, Coders-module, Utils-module.
 
 Coders and Utils are located in two separate repositories, so you need to 
 download and build them first so they are installed in your local maven repository.
