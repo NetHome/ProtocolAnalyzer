@@ -35,7 +35,9 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
@@ -91,7 +93,7 @@ public class RawMessageDistributionWindow {
 	protected Shell m_Shell;
 	private final static int PARSED_0 = -200;
 	private final static int PARSED_1 = -150;
-	private static final int SELECTION_MARK = -220;
+	private static final int SELECTION_MARK = -190;
 	private static final int SELECTION_SPACE = -202;
 	private final static int NO_COLUMNS = 5;
 
@@ -123,7 +125,7 @@ public class RawMessageDistributionWindow {
 	    
 	    XYSeries sampleSeries = new XYSeries("Raw data");
 	    XYSeries pulseSeries = new XYSeries("Parsed data");
-	    m_SelectedPulseSeries = new XYSeries("Selected Pulses");
+	    m_SelectedPulseSeries = new XYSeries("Selected Pulses", false);
 
 	    double x = 0.0;
 	    boolean level = false;
@@ -237,8 +239,9 @@ public class RawMessageDistributionWindow {
 	    // Create a Chart and a panel for signal
 	    JFreeChart chart = ChartFactory.createXYLineChart("Signal", "ms", "Amplitude", m_SignalSeriesCollection, PlotOrientation.VERTICAL, true, false, false);
 	    ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new Dimension(700, 270));
-        
+        chartPanel.setPreferredSize(new Dimension(700, 290));
+        configurePanelLooks(chart, 2);
+
         // Create a ChartComposite on our window
         ChartComposite frame = new ChartComposite(chartFolder, SWT.NONE, chart, true);
         frame.setHorizontalAxisTrace(false);
@@ -247,7 +250,7 @@ public class RawMessageDistributionWindow {
         GridData gridDatap = new GridData(GridData.HORIZONTAL_ALIGN_FILL| GridData.VERTICAL_ALIGN_BEGINNING);
 		gridDatap.grabExcessHorizontalSpace = true;
 		gridDatap.grabExcessVerticalSpace = false;
-		gridDatap.heightHint = 270;
+		//gridDatap.heightHint = 270;
 		frame.setLayoutData(gridDatap);
 		signalTab.setControl(frame);
         
@@ -258,6 +261,7 @@ public class RawMessageDistributionWindow {
 	    // Create a Chart and a panel for pulse length distribution
 	    JFreeChart distributionChart = ChartFactory.createXYLineChart("Pulse Length Distribution", "Pulse Length (us)", "# Pulses", m_DistributionData, PlotOrientation.VERTICAL, true, false, false);
 	    ChartPanel distributionChartPanel = new ChartPanel(distributionChart);
+        configurePanelLooks(distributionChart, 2);
         distributionChartPanel.setPreferredSize(new Dimension(700, 270));// 270
         
         // Make the mark line dashed, so we can see the space line when they overlap
@@ -334,8 +338,22 @@ public class RawMessageDistributionWindow {
 		});
 
  	}
-	
-	/**
+
+    private void configurePanelLooks(JFreeChart chart, int selectionSeries) {
+        TextTitle title = chart.getTitle(); // fix title
+        Font titleFont = title.getFont();
+        titleFont = titleFont.deriveFont(Font.PLAIN, (float) 14.0);
+        title.setFont(titleFont);
+        title.setPaint(Color.darkGray);
+        XYPlot plot = chart.getXYPlot();
+        plot.setBackgroundPaint(Color.WHITE);
+        plot.setDomainGridlinePaint(Color.lightGray);
+        plot.setRangeGridlinePaint(Color.lightGray);
+        XYLineAndShapeRenderer signalRenderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
+        signalRenderer.setSeriesStroke(selectionSeries, new BasicStroke(5f));
+    }
+
+    /**
 	 * Update the maximum number of pulses with same length
 	 * @param numberOfPulses 
 	 */
@@ -412,9 +430,8 @@ public class RawMessageDistributionWindow {
 		
 		// Mark the selected region in the pulse distribution graph
 		m_SelectedIntervalSeries.add(((int)(minLength / 10)) * 10, 0);
-		m_SelectedIntervalSeries.add(((int)(minLength / 10)) * 10, -m_MaxNumberOfPulses / 30.0);
-		m_SelectedIntervalSeries.add(((int)(maxLength / 10)) * 10 + 10, -m_MaxNumberOfPulses / 30.0);
 		m_SelectedIntervalSeries.add(((int)(maxLength / 10)) * 10 + 10, 0);
+		m_SelectedIntervalSeries.add(Float.NaN, Float.NaN);
 
 		
 		// Add the selection series to the graph again
@@ -429,10 +446,10 @@ public class RawMessageDistributionWindow {
 				// Check if the pulse matches our interval
 				if ((pulse >= (minLength - 0.5)) && (pulse <= (maxLength + 0.5)) && (isMark == level)) {
 					// If it does, plot the pulse
-					m_SelectedPulseSeries.add(lastX, SELECTION_SPACE);
+					//m_SelectedPulseSeries.add(Double.NaN, Double.NaN);
 					m_SelectedPulseSeries.add(lastX, SELECTION_MARK);
 					m_SelectedPulseSeries.add(x, SELECTION_MARK);
-					m_SelectedPulseSeries.add(x, SELECTION_SPACE);
+					m_SelectedPulseSeries.add(Double.NaN, Double.NaN);
 				}
 				lastX = x;
 		    	level = !level;
@@ -452,10 +469,10 @@ public class RawMessageDistributionWindow {
 	    			// Check if the pulse matches our interval
 	    			if ((length >= (minLength - 0.5)) && (length <= (maxLength +  0.5)) && (isMark == level)) {
 	    				// If it does, plot the pulse
-	    				m_SelectedPulseSeries.add(lastX, SELECTION_SPACE);
+	    				//m_SelectedPulseSeries.add(Double.NaN, Double.NaN);
 	    				m_SelectedPulseSeries.add(lastX, SELECTION_MARK);
 	    				m_SelectedPulseSeries.add(x, SELECTION_MARK);
-	    				m_SelectedPulseSeries.add(x, SELECTION_SPACE);
+	    				m_SelectedPulseSeries.add(Double.NaN, Double.NaN);
 	    			}
 	    			lastFlank = sampleNumber;
 	    			lastX = x;

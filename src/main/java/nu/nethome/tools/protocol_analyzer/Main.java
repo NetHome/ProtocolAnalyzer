@@ -24,6 +24,7 @@ import nu.nethome.util.plugin.RawPluginScanner;
 import nu.nethome.util.ps.ProtocolDecoder;
 import nu.nethome.util.ps.ProtocolDecoderSink;
 import nu.nethome.util.ps.ProtocolMessage;
+import nu.nethome.util.ps.RawProtocolMessage;
 import nu.nethome.util.ps.impl.*;
 import nu.nethome.util.ps.impl.AudioProtocolPort.Channel;
 import org.eclipse.swt.widgets.Display;
@@ -59,6 +60,10 @@ public class Main implements ProtocolDecoderSink {
 		m_View.parsedMessage(message);
 	}
 
+	public void parsedRawMessage(RawProtocolMessage message) {
+		m_View.parsedRawMessage(message);
+	}
+
 	public void partiallyParsedMessage(String protocol, int bits) {
 		m_View.partiallyParsedMessage(protocol, bits);
 	}
@@ -66,6 +71,10 @@ public class Main implements ProtocolDecoderSink {
 	public void reportLevel(int level) {
 		m_View.reportLevel(level);
 	}
+
+    public Main outer() {
+        return Main.this;
+    }
 
 	public void go(float sampleRate){
 
@@ -101,13 +110,29 @@ public class Main implements ProtocolDecoderSink {
             }
 		}
 		
-		// Create the raw decoder/sampler which also has a protocol decoder interface
-		m_Raw = new RawDecoder();
-		m_ProtocolDecoders.add(m_Raw);
-
         // Set the Sink - which is this class
         m_ProtocolDecoders.setTarget(this);
-				
+
+        // Create the raw decoder/sampler which also has a protocol decoder interface
+        m_Raw = new RawDecoder();
+        m_Raw.setTarget( new ProtocolDecoderSink() {
+            @Override
+            public void parsedMessage(ProtocolMessage message) {
+                outer().parsedRawMessage((RawProtocolMessage)message);
+            }
+
+            @Override
+            public void partiallyParsedMessage(String protocol, int bits) {
+                // Not needed
+            }
+
+            @Override
+            public void reportLevel(int level) {
+                outer().reportLevel(level);
+            }
+        });
+        m_ProtocolDecoders.add(m_Raw);
+
 		// Create The Flank Detector and attach the decoders
 		m_FlankDetector = new SimpleFlankDetector();
 		m_FlankDetector.setProtocolDecoder(m_ProtocolDecoders);

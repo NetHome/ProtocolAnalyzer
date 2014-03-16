@@ -45,24 +45,33 @@ import java.util.prefs.Preferences;
 
 /**
  * @author Stefan
- * 
+ *
  * This is the main window of the sampler application.
  */
 public class MainWindow implements ProtocolDecoderSink {
 
 	protected class ProtocolWindowMessage implements Runnable {
-		ProtocolMessage m_Message;
-		MainWindow m_Window;
+		public final ProtocolMessage m_Message;
 
-		public ProtocolWindowMessage(MainWindow window, ProtocolMessage message) {
+		public ProtocolWindowMessage(ProtocolMessage message) {
 			m_Message = message;
-			m_Window = window;
 		}
 
 		public void run() {
-			m_Window.addTableRow(m_Message);
+			addTableRow(m_Message);
+		}
+	}
+
+	protected class RawProtocolWindowMessage implements Runnable {
+		public final RawProtocolMessage message;
+
+		public RawProtocolWindowMessage(RawProtocolMessage message) {
+			this.message = message;
 		}
 
+		public void run() {
+			addRawTableRow(message);
+		}
 	}
 
 	protected class LevelWindowMessage implements Runnable {
@@ -166,7 +175,7 @@ public class MainWindow implements ProtocolDecoderSink {
 
 	/**
 	 * Creates the Main Window and its content
-	 * 
+	 *
 	 * @param display
 	 *            The display used to open the window
 	 * @param model
@@ -180,7 +189,7 @@ public class MainWindow implements ProtocolDecoderSink {
 		// player.old_start();
 		player.openLine();
 		player.setSwing(100);
-		
+
 		// Create the main window of the application
 		m_Shell = new Shell(display);
 		m_Shell.setText(Messages.getString("MainWindow.IRSampler")); //$NON-NLS-1$
@@ -239,14 +248,14 @@ public class MainWindow implements ProtocolDecoderSink {
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		gridData.grabExcessVerticalSpace = false;
 		levelText.setLayoutData(gridData);
-		
+
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		gridData.widthHint = LEVELWIDTH;
 		gridData.heightHint = LEVELHEIGHT;
 		gridData.grabExcessVerticalSpace = false;
 		m_LevelMeter = new LevelMeter(statusRowComposite, gridData);
 		updateWindowState(true);
-		
+
 		// Create and start a timer to update status on button and status row
 		Runnable timer = new Runnable() {
 			public void run() {
@@ -262,7 +271,7 @@ public class MainWindow implements ProtocolDecoderSink {
 	/**
 	 * Creates all items located in the popup menu and associates all the menu
 	 * items with their appropriate functions.
-	 * 
+	 *
 	 * @return Menu The created popup menu.
 	 */
 	private Menu createPopUpMenu() {
@@ -318,7 +327,7 @@ public class MainWindow implements ProtocolDecoderSink {
 				exportPulseData();
 			}
 		});
-		
+
 		// Re-analyze pulses
 		item = new MenuItem(popUpMenu, SWT.PUSH);
 		item.setText(Messages.getString("MainWindow.ReanalyzePulseData")); //$NON-NLS-1$
@@ -438,12 +447,12 @@ public class MainWindow implements ProtocolDecoderSink {
 			}
 		});
 		// Add keyboard handler
-		m_Table.addKeyListener(new KeyAdapter() {	
+		m_Table.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				handleKeyPress(e);
 			}
 		});
-		m_Table.setMenu(createPopUpMenu());	
+		m_Table.setMenu(createPopUpMenu());
 	}
 
 	/**
@@ -454,14 +463,14 @@ public class MainWindow implements ProtocolDecoderSink {
 		if (e.character == SWT.DEL) {
 			deleteSelectedRow((e.stateMask & SWT.SHIFT) != 0);
 		}
-		
+
 	}
 
 	Image getToolImage(String name) {
 		return new Image(m_Display, this.getClass().getClassLoader()
 				.getResourceAsStream("nu/nethome/tools/protocol_analyzer/" + name)); //$NON-NLS-1$
 	}
-	
+
 	/**
 	 * Create the Tool Bar with all buttons
 	 */
@@ -516,7 +525,7 @@ public class MainWindow implements ProtocolDecoderSink {
 		});
 
 		separator = new ToolItem(bar, SWT.SEPARATOR);
-		
+
 		// Delete Selected
 		item = new ToolItem(bar, 0);
 		item.setImage(getToolImage("selection_delete24.png")); //$NON-NLS-1$
@@ -538,7 +547,7 @@ public class MainWindow implements ProtocolDecoderSink {
 		});
 
 		separator = new ToolItem(bar, SWT.SEPARATOR);
-		
+
 		// Edit template button
 		item = new ToolItem(bar, 0);
 		item.setImage(getToolImage("edit24.png")); //$NON-NLS-1$
@@ -600,7 +609,7 @@ public class MainWindow implements ProtocolDecoderSink {
 				updateWindowState(false);
 			}
 		});
-		
+
 		// Stop scanning button
 		m_StopScanningButton = new ToolItem(bar, 0);
 		m_StopScanningButton.setDisabledImage(getToolImage("radar_stop_dis24.png")); //$NON-NLS-1$
@@ -636,7 +645,7 @@ public class MainWindow implements ProtocolDecoderSink {
 		});
 
 
-		
+
 //		 //This button was added temporarily for testing signal generation
 //
 //		item = new ToolItem (bar, 0); toolImage = new Image(m_Display,
@@ -690,7 +699,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 
 //	protected int m_Message = 0x54;
 //	protected int m_Message = 0x1;
-	
+
 	protected void createMenus() {
 
 		// Create the menue bar
@@ -789,7 +798,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 				m_Shell.close(); // calls dispose() - see note below
 			}
 		});
-		
+
 		// Create View menu
 		viewMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 		viewMenuHeader.setText(Messages.getString("MainWindow.ViewMenu")); //$NON-NLS-1$
@@ -823,7 +832,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 			}
 		});
 
-		
+
 		// Settings... menu Item
 		settingsItem = new MenuItem(viewMenu, SWT.PUSH);
 		settingsItem.setText(Messages.getString("MainWindow.Settingsxxx")); //$NON-NLS-1$
@@ -836,9 +845,9 @@ public void updateWindowState(boolean isConfigurationChange) {
 				editSettings();
 			}
 		});
-		
-		
-		
+
+
+
 		separatorItem = new MenuItem(viewMenu, SWT.SEPARATOR);
 
 		// Sample... menu Item
@@ -853,8 +862,8 @@ public void updateWindowState(boolean isConfigurationChange) {
 				viewSample();
 			}
 		});
-		
-		
+
+
 		// Create Action menu
 		MenuItem actionMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 		actionMenuHeader.setText(Messages.getString("MainWindow.ActionMenu")); //$NON-NLS-1$
@@ -920,8 +929,15 @@ public void updateWindowState(boolean isConfigurationChange) {
 		// Because all window operations has to be done in the Window thread,
 		// we have to leave this for later execusion. The IrWindowMEssage class
 		// run-method will call the addTableRow method.
-		if ((m_ShowRaw || !message.getProtocol().equalsIgnoreCase("raw"))) {  //$NON-NLS-1$
-			Display.getDefault().asyncExec(new ProtocolWindowMessage(this, message));
+		Display.getDefault().asyncExec(new ProtocolWindowMessage(message));
+	}
+
+	public void parsedRawMessage(RawProtocolMessage message) {
+		// Because all window operations has to be done in the Window thread,
+		// we have to leave this for later execusion. The IrWindowMEssage class
+		// run-method will call the addTableRow method.
+		if (m_ShowRaw) {
+			Display.getDefault().asyncExec(new RawProtocolWindowMessage(message));
 		}
 	}
 
@@ -956,7 +972,23 @@ public void updateWindowState(boolean isConfigurationChange) {
 		}
 	}
 
-	public void partiallyParsedMessage(String protocol, int bits) {
+    protected void addRawTableRow(RawProtocolMessage message) {
+        TableItem item1 = new TableItem(m_Table, SWT.NONE);
+        String text[] = new String[NO_COLUMNS];
+        DateFormat df = new SimpleDateFormat(Messages.getString("MainWindow.HHmmssSSS")); //$NON-NLS-1$
+        Date now = new Date();
+        text[0] = df.format(now);
+        text[1] = "[Sample]";
+        text[2] = "-";
+        text[3] = "-";
+        double sampleLength = 1000D * message.m_Samples.size() / message.m_SampleFrequency;
+        text[4] = String.format("%.2f ms", sampleLength);
+        text[5] = "-";
+        item1.setText(text);
+        item1.setData(message);
+    }
+
+    public void partiallyParsedMessage(String protocol, int bits) {
 		System.out.print("\nPartially parsed " + Integer.toString(bits) //$NON-NLS-1$
 				+ "bits of " + protocol); //$NON-NLS-1$
 	}
@@ -968,7 +1000,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 	}
 
 	public void displayLevel(int level) {
-		// Only draw level for Audio Sampling device 
+		// Only draw level for Audio Sampling device
 		if (m_Model.getSignalHardware() == 0) {
 			m_LevelMeter.drawLevel((25 * level) / 127);
 		}
@@ -1124,18 +1156,18 @@ public void updateWindowState(boolean isConfigurationChange) {
 			GUI.open();
 		}
 	}
-	
+
 	/**
 	 * Export the pulse data of the currently selected sample
 	 */
 	protected void exportPulseData() {
-		
+
 		// Make sure we have a line selected
 		if (m_Table.getSelectionCount() == 0)
 			return;
 		ProtocolMessage message = (ProtocolMessage) m_Table.getSelection()[0]
 				.getData();
-		
+
 		// Check that it is a raw sample
 		if (!message.getProtocol().equals("Raw")) {  //$NON-NLS-1$
 			return;
@@ -1144,7 +1176,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 
 		FileDialog save = new FileDialog(m_Shell, SWT.SAVE);
 		save.setText(Messages.getString("MainWindow.ExportData")); //$NON-NLS-1$
-		
+
 		// Ask for export file name
 		String fileName = save.open();
 		if (fileName == null) {
@@ -1171,19 +1203,19 @@ public void updateWindowState(boolean isConfigurationChange) {
 	 * Reanalyze the pulse data of the currently selected sample
 	 */
 	protected void reanalyzePulseData() {
-		
+
 		// Make sure we have a line selected
 		if (m_Table.getSelectionCount() == 0)
 			return;
 		ProtocolMessage message = (ProtocolMessage) m_Table.getSelection()[0]
 				.getData();
-		
+
 		// Check that it is a raw sample
 		if (!message.getProtocol().equals("Raw")) {  //$NON-NLS-1$
 			return;
 		}
 		RawProtocolMessage mess = (RawProtocolMessage) message;
-		
+
 		boolean currentlySampling = m_Model.isScanning();
 		// Pause current sampler so we do not mix signals
 		m_Model.stopScanning();
@@ -1192,13 +1224,13 @@ public void updateWindowState(boolean isConfigurationChange) {
 		boolean state = false;
 		//m_Model.getProtocolDecoders().parse(30000.0, false);
 		for (double pulse : mess.m_PulseLengths) {
-			// Feed pulses to decoders 
+			// Feed pulses to decoders
 			m_Model.getProtocolDecoders().parse(pulse, state);
 			state = !state;
 		}
 		// Add a long quiet period to end detection
 		m_Model.getProtocolDecoders().parse(200000.0, false);
-		
+
 		// Restart port (if it was sampling)
 		if (currentlySampling) {
 			m_Model.startScanning();
@@ -1209,26 +1241,26 @@ public void updateWindowState(boolean isConfigurationChange) {
 	 * Export the pulse data of the currently selected sample
 	 */
 	protected void reanalyzeSampleData() {
-		
+
 		// Make sure we have a line selected
 		if (m_Table.getSelectionCount() == 0)
 			return;
 		ProtocolMessage message = (ProtocolMessage) m_Table.getSelection()[0]
 				.getData();
-		
+
 		// Check that it is a raw sample
 		if (!message.getProtocol().equals("Raw")) {  //$NON-NLS-1$
 			return;
 		}
 		RawProtocolMessage mess = (RawProtocolMessage) message;
-		
+
 		boolean currentlySampling = m_Model.isScanning();
 		// Pause current sampler so we do not mix signals
 		m_Model.stopScanning();
 
 		// Loop through all samples
 		for (int sample : mess.m_Samples) {
-			// Feed pulses to decoders 
+			// Feed pulses to decoders
 			m_Model.getProtocolSamplers().addSample(sample);
 		}
 		// Add a quiet period (200ms)to end detection
@@ -1236,7 +1268,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 		for (int i = 0; i < numberOfEndSamples; i++) {
 			m_Model.getProtocolSamplers().addSample(0);
 		}
-		
+
 		// Restart port (if it was sampling)
 		if (currentlySampling) {
 			m_Model.startScanning();
@@ -1249,20 +1281,20 @@ public void updateWindowState(boolean isConfigurationChange) {
 	protected void editSettings() {
 		PulseProtocolPort ports[] = {m_Model.getAudioSampler(), m_Model.getCULPort()};
 		int previousHardware = m_Model.getSignalHardware();
-		
+
 		int lastSource = m_Model.getAudioSampler().getSource();
-		
+
 		Channel lastChannel = m_Model.getAudioSampler().getChannel();
-		
+
 		String lastCULPort = m_Model.getCULPort().getSerialPort();
-		
+
 		// Create settings dialog and open it
 		SettingsTabDialog win = new SettingsTabDialog(m_Shell, 0);
 		win.open(m_Model);
-		
-		// If source or selected hardware has changed, Stop previous port and start current, 
-		// if it was not changed it means it is restarted 
-		if ((lastSource != m_Model.getAudioSampler().getSource()) || 
+
+		// If source or selected hardware has changed, Stop previous port and start current,
+		// if it was not changed it means it is restarted
+		if ((lastSource != m_Model.getAudioSampler().getSource()) ||
 				(previousHardware != m_Model.getSignalHardware()) ||
 				(lastChannel != m_Model.getAudioSampler().getChannel()) ||
 				(!lastCULPort.equals(m_Model.getCULPort().getSerialPort()))) {
@@ -1292,7 +1324,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 			m_Table.remove(m_Table.getSelectionIndex());
 		}
 	}
-	
+
 	/**
 	 * Delete all sample rows
 	 */
