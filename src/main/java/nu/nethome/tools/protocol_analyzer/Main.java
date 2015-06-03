@@ -20,6 +20,7 @@
 package nu.nethome.tools.protocol_analyzer;
 
 import nu.nethome.coders.decoders.*;
+import nu.nethome.tools.protocol_analyzer.tempdecoders.RollerTrol2Decoder;
 import nu.nethome.util.plugin.RawPluginScanner;
 import nu.nethome.util.ps.ProtocolDecoder;
 import nu.nethome.util.ps.ProtocolDecoderSink;
@@ -99,6 +100,10 @@ public class Main implements ProtocolDecoderSink {
 		m_ProtocolDecoders.add(new NexaFireDecoder());
 		m_ProtocolDecoders.add(new EmotivaDecoder());
 		m_ProtocolDecoders.add(new ZhejiangDecoder());
+		m_ProtocolDecoders.add(new OregonDecoder());
+		m_ProtocolDecoders.add(new FineOffsetDecoder());
+		m_ProtocolDecoders.add(new RollerTrolDecoder());
+		m_ProtocolDecoders.add(new RollerTrol2Decoder());
 		m_ProntoDecoder = new ProntoDecoder(); // Has extra settings which needs to be exposed
 		m_ProtocolDecoders.add(m_ProntoDecoder);
 		

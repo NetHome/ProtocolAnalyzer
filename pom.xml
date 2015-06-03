@@ -15,7 +15,7 @@
         <package.jar>setup${project.artifactId}.jar</package.jar>
         <package.exe>ProtocolAnalyzerIn.exe</package.exe>
         <utils.version>1.1-SNAPSHOT</utils.version>
-        <coders.version>1.0</coders.version>
+        <coders.version>1.2-SNAPSHOT</coders.version>
     </properties>
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -167,6 +167,11 @@
             <groupId>nu.nethome</groupId>
             <artifactId>coders</artifactId>
             <version>${coders.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.2.1</version>
         </dependency>
     </dependencies>
     <profiles>

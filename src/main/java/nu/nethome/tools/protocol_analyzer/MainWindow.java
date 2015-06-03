@@ -964,7 +964,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 			text[3] = Integer.toHexString(message.getAddress());
 			text[4] = "";  //$NON-NLS-1$
 			for (int i = 0; i < message.getRawMessage().length; i++) {
-				text[4] += Integer.toBinaryString(message.getRawMessage()[i]) + " ";  //$NON-NLS-1$
+				text[4] += String.format("%02X ", message.getRawMessage()[i]);  //$NON-NLS-1$
 			}
 			text[5] = Integer.toString(message.getRepeat());
 			item1.setText(text);
