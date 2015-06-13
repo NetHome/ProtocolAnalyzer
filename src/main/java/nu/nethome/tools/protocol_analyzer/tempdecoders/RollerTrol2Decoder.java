@@ -37,7 +37,7 @@ public class RollerTrol2Decoder implements ProtocolDecoder {
     public static final int COMMAND_LEARN = 0xCC;
 
     public static final PulseLength LONG_PREAMBLE_MARK =
-            new PulseLength(RollerTrol2Decoder.class, "LONG_PREAMBLE_MARK", 5170, 4800, 5900);
+            new PulseLength(RollerTrol2Decoder.class, "LONG_PREAMBLE_MARK", 5170, 4000, 5900);
     public static final PulseLength LONG_PREAMBLE_SPACE =
             new PulseLength(RollerTrol2Decoder.class, "LONG_PREAMBLE_SPACE", 1665, 1000, 2000);
     public static final PulseLength SHORT =
@@ -48,8 +48,8 @@ public class RollerTrol2Decoder implements ProtocolDecoder {
             new PulseLength(RollerTrol2Decoder.class, "REPEAT_SPACE", 9100, 8000, 12000);
 
     public static final BitString.Field COMMAND = new BitString.Field(0, 8);
-    public static final BitString.Field CHANNEL = new BitString.Field(32, 8);
-    public static final BitString.Field ADDRESS = new BitString.Field(8, 32);
+    public static final BitString.Field CHANNEL = new BitString.Field(8, 4);
+    public static final BitString.Field ADDRESS = new BitString.Field(12, 28);
 
     protected static final int IDLE = 0;
     protected static final int READING_LONG_PREAMBLE_SPACE = 2;
