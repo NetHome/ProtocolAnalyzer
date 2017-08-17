@@ -657,12 +657,12 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 		}
 		combo1.select(m_Sampler.getSource());
 		
-		String[] ports = m_Model.getCULPort().getPortNames();
-		culPortCombo.add(m_Model.getCULPort().getSerialPort());
+		String[] ports = m_Model.getPulsePort().getPortNames();
+		culPortCombo.add(m_Model.getPulsePort().getSerialPort());
 		int selection = 0;
 		for (int i = 0; i < ports.length; i++){
 			culPortCombo.add(ports[i]);
-			if (ports[i].equals(m_Model.getCULPort().getSerialPort())) {
+			if (ports[i].equals(m_Model.getPulsePort().getSerialPort())) {
 				selection = i + 1;
 			}
 		}
@@ -702,13 +702,15 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 		selectAudioSource.setSelection(m_Model.getSignalHardware() == 0);
 		
 		// Bandwidth settings
-		for (double bw : m_Model.getCULPort().getBandwidths()) {
+		/*
+		for (double bw : m_Model.getPulsePort().getBandwidths()) {
 			bandWithCombo.add(String.format("%.2f KHz", bw / 1000));
 		}
-		bandWithCombo.select(m_Model.getCULPort().getBandwidthOrdinal());
+		bandWithCombo.select(m_Model.getPulsePort().getBandwidthOrdinal());
+		*/
 		
 		// AGC settings
-		agcCombo.add(String.format("%06X", m_Model.getCULPort().getAGCSettings()));
+		//agcCombo.add(String.format("%06X", m_Model.getPulsePort().getAGCSettings()));
 		agcCombo.add("030091");
 		agcCombo.add("040091");
 		agcCombo.add("050091");
@@ -721,7 +723,7 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 		agcCombo.add("070092");
 		agcCombo.select(0);
 		
-		FrequencyText.setText(Double.toString(m_Model.getCULPort().getRadioFrequency()/1000000.0));
+		// FrequencyText.setText(Double.toString(m_Model.getPulsePort().getRadioFrequency()/1000000.0));
 	}
 
 	protected void updateData() {
@@ -731,7 +733,7 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 			// Source
 			m_Sampler.setSource(combo1.getSelectionIndex());
 			
-			m_Model.getCULPort().setSerialPort(culPortCombo.getItem(culPortCombo.getSelectionIndex()));
+			m_Model.getPulsePort().setSerialPort(culPortCombo.getItem(culPortCombo.getSelectionIndex()));
 
 			// Channel
 			m_Sampler.setChannel(mono.getSelection() ? AudioProtocolPort.Channel.MONO : 
@@ -770,11 +772,11 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 				m_Model.setSignalHardware(0);
 			}
 			
-			m_Model.getCULPort().setBandwidthOrdinal(bandWithCombo.getSelectionIndex());
+			//m_Model.getPulsePort().setBandwidthOrdinal(bandWithCombo.getSelectionIndex());
 			
-			m_Model.getCULPort().setAGCSettings(Integer.parseInt(agcCombo.getItem(agcCombo.getSelectionIndex()), 16));
+			//m_Model.getPulsePort().setAGCSettings(Integer.parseInt(agcCombo.getItem(agcCombo.getSelectionIndex()), 16));
 			
-			m_Model.getCULPort().setRadioFrequency(getDouble(FrequencyText, 0.0, 1000.0, m_Model.getCULPort().getRadioFrequency(), 1000000));
+			// m_Model.getPulsePort().setRadioFrequency(getDouble(FrequencyText, 0.0, 1000.0, m_Model.getPulsePort().getRadioFrequency(), 1000000));
 		}
 		catch (NumberFormatException n) {
 			//NYI

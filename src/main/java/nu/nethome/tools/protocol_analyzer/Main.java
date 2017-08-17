@@ -20,7 +20,6 @@
 package nu.nethome.tools.protocol_analyzer;
 
 import nu.nethome.coders.decoders.*;
-import nu.nethome.tools.protocol_analyzer.tempdecoders.RollerTrol2Decoder;
 import nu.nethome.util.plugin.RawPluginScanner;
 import nu.nethome.util.ps.ProtocolDecoder;
 import nu.nethome.util.ps.ProtocolDecoderSink;
@@ -50,7 +49,7 @@ public class Main implements ProtocolDecoderSink {
 	private ProtocolDecoderGroup m_ProtocolDecoders = new ProtocolDecoderGroup();
 	private ProtocolSamplerGroup m_Samplers = new ProtocolSamplerGroup();
 	private RawDecoder m_Raw;
-	private CULProtocolPort m_CULPort;
+	private ArduinoProtocolPort pulsePort;
 	private ProntoDecoder m_ProntoDecoder;
 	private FIRFilter6000 m_Filter;
     private RawPluginScanner m_PluginProvider = new RawPluginScanner();
@@ -103,7 +102,7 @@ public class Main implements ProtocolDecoderSink {
 		m_ProtocolDecoders.add(new OregonDecoder());
 		m_ProtocolDecoders.add(new FineOffsetDecoder());
 		m_ProtocolDecoders.add(new RollerTrolDecoder());
-		m_ProtocolDecoders.add(new RollerTrol2Decoder());
+		m_ProtocolDecoders.add(new RollerTrolGDecoder());
 		m_ProntoDecoder = new ProntoDecoder(); // Has extra settings which needs to be exposed
 		m_ProtocolDecoders.add(m_ProntoDecoder);
 		
@@ -159,7 +158,7 @@ public class Main implements ProtocolDecoderSink {
         m_AudioSampler.setSampleRate(sampleRate);
 		
 		// Create our CUL-Port and attach the decoders directly to it.
-		m_CULPort = new CULProtocolPort(m_ProtocolDecoders);
+		pulsePort = new ArduinoProtocolPort(m_ProtocolDecoders);
 		// Read configuration for our CUL port
 		loadCULPreferences();
 		
@@ -167,7 +166,7 @@ public class Main implements ProtocolDecoderSink {
 		
 		m_ProtocolPorts = new PulseProtocolPort[2];
 		m_ProtocolPorts[AUDIO_SAMPLER] = m_AudioSampler;
-		m_ProtocolPorts[CUL_SAMPLER] = m_CULPort;
+		m_ProtocolPorts[CUL_SAMPLER] = pulsePort;
 		m_SignalHardware = p.getInt("SignalHardware", 0);
 		
 	    // Create the display for the main window
@@ -296,10 +295,7 @@ public class Main implements ProtocolDecoderSink {
 	 */
 	public void loadCULPreferences() {
 		Preferences p = Preferences.userNodeForPackage(this.getClass());
-		m_CULPort.setSerialPort(p.get("CULPort", m_CULPort.getSerialPort()));
-		m_CULPort.setAGCSettings(p.getInt("AGCSettings", m_CULPort.getAGCSettings()));
-		m_CULPort.setBandwidthOrdinal(p.getInt("BandwidthOrdinal", m_CULPort.getBandwidthOrdinal()));
-		m_CULPort.setRadioFrequency(p.getDouble("RadioFrequency", m_CULPort.getRadioFrequency()));
+		pulsePort.setSerialPort(p.get("CULPort", pulsePort.getSerialPort()));
 	}
 	
 	/**
@@ -307,10 +303,7 @@ public class Main implements ProtocolDecoderSink {
 	 */
 	public void saveCULPreferences() {
 		Preferences p = Preferences.userNodeForPackage(this.getClass());
-		p.put("CULPort", m_CULPort.getSerialPort());
-		p.putInt("AGCSettings", m_CULPort.getAGCSettings());
-		p.putInt("BandwidthOrdinal", m_CULPort.getBandwidthOrdinal());
-		p.putDouble("RadioFrequency", m_CULPort.getRadioFrequency());
+		p.put("CULPort", pulsePort.getSerialPort());
 	}
 
 	public AudioProtocolPort getAudioSampler() {
@@ -341,8 +334,8 @@ public class Main implements ProtocolDecoderSink {
 		return m_Raw;
 	}
 
-	public CULProtocolPort getCULPort() {
-		return m_CULPort;
+	public ArduinoProtocolPort getPulsePort() {
+		return pulsePort;
 	}
 
 	public ProntoDecoder getProntoDecoder() {

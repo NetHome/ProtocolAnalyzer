@@ -1279,14 +1279,14 @@ public void updateWindowState(boolean isConfigurationChange) {
 	 * Open settings dialog and apply the settings
 	 */
 	protected void editSettings() {
-		PulseProtocolPort ports[] = {m_Model.getAudioSampler(), m_Model.getCULPort()};
+		PulseProtocolPort ports[] = {m_Model.getAudioSampler(), m_Model.getPulsePort()};
 		int previousHardware = m_Model.getSignalHardware();
 
 		int lastSource = m_Model.getAudioSampler().getSource();
 
 		Channel lastChannel = m_Model.getAudioSampler().getChannel();
 
-		String lastCULPort = m_Model.getCULPort().getSerialPort();
+		String lastCULPort = m_Model.getPulsePort().getSerialPort();
 
 		// Create settings dialog and open it
 		SettingsTabDialog win = new SettingsTabDialog(m_Shell, 0);
@@ -1297,7 +1297,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 		if ((lastSource != m_Model.getAudioSampler().getSource()) ||
 				(previousHardware != m_Model.getSignalHardware()) ||
 				(lastChannel != m_Model.getAudioSampler().getChannel()) ||
-				(!lastCULPort.equals(m_Model.getCULPort().getSerialPort()))) {
+				(!lastCULPort.equals(m_Model.getPulsePort().getSerialPort()))) {
 			ports[previousHardware].close();
 			ports[m_Model.getSignalHardware()].open();
 		}
