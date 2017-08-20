@@ -934,7 +934,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 
 	public void parsedRawMessage(RawProtocolMessage message) {
 		// Because all window operations has to be done in the Window thread,
-		// we have to leave this for later execusion. The IrWindowMEssage class
+		// we have to leave this for later execusion. The IrWindowMessage class
 		// run-method will call the addTableRow method.
 		if (m_ShowRaw) {
 			Display.getDefault().asyncExec(new RawProtocolWindowMessage(message));
@@ -981,7 +981,15 @@ public void updateWindowState(boolean isConfigurationChange) {
         text[1] = "[Sample]";
         text[2] = "-";
         text[3] = "-";
-        double sampleLength = 1000D * message.m_Samples.size() / message.m_SampleFrequency;
+		double sampleLength = 0;
+		if (message.m_Samples.size() != 0) {
+			sampleLength = 1000D * message.m_Samples.size() / message.m_SampleFrequency;
+		} else {
+			for (Double pulse : message.m_PulseLengths) {
+				sampleLength += pulse;
+			}
+			sampleLength = sampleLength / 1000.0;
+		}
         text[4] = String.format("%.2f ms", sampleLength);
         text[5] = "-";
         item1.setText(text);

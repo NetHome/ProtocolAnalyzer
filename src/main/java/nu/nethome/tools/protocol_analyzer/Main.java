@@ -48,7 +48,7 @@ public class Main implements ProtocolDecoderSink {
 	private SimpleFlankDetector m_FlankDetector;
 	private ProtocolDecoderGroup m_ProtocolDecoders = new ProtocolDecoderGroup();
 	private ProtocolSamplerGroup m_Samplers = new ProtocolSamplerGroup();
-	private RawDecoder m_Raw;
+	private RawLocalDecoder m_Raw;
 	private ArduinoProtocolPort pulsePort;
 	private ProntoDecoder m_ProntoDecoder;
 	private FIRFilter6000 m_Filter;
@@ -118,7 +118,7 @@ public class Main implements ProtocolDecoderSink {
         m_ProtocolDecoders.setTarget(this);
 
         // Create the raw decoder/sampler which also has a protocol decoder interface
-        m_Raw = new RawDecoder();
+        m_Raw = new RawLocalDecoder();
         m_Raw.setTarget( new ProtocolDecoderSink() {
             @Override
             public void parsedMessage(ProtocolMessage message) {
@@ -330,7 +330,7 @@ public class Main implements ProtocolDecoderSink {
 		m_ExportTemplate = exportTemplate;
 	}
 
-	public RawDecoder getRawDecoder() {
+	public RawLocalDecoder getRawDecoder() {
 		return m_Raw;
 	}
 
