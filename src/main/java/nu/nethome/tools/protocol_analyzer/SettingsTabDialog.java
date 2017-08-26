@@ -152,7 +152,7 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 							signalSourceGroup.setLayoutData(signalSourceGroupLData);
 							{
 								selectCULSource = new Button(signalSourceGroup, SWT.RADIO | SWT.LEFT);
-								selectCULSource.setText("CUL");
+								selectCULSource.setText("Arduino");
 								FormData selectCULSourceLData = new FormData();
 								selectCULSourceLData.width = 100;
 								selectCULSourceLData.height = 16;
@@ -480,7 +480,7 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 				}
 				{
 					culTabItem = new CTabItem(settingsFolder, SWT.NONE);
-					culTabItem.setText("CUL Settings");
+					culTabItem.setText("Arduino Settings");
 					{
 						culSettingsComposite = new Composite(settingsFolder, SWT.NONE);
 						culTabItem.setControl(culSettingsComposite);
@@ -509,7 +509,7 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 							}
 							{
 								culSerialLabel = new Label(group2, SWT.NONE);
-								culSerialLabel.setText("CUL Serial Port");
+								culSerialLabel.setText("Arduino Serial Port");
 								FormData culSerialLabelLData = new FormData();
 								culSerialLabelLData.left =  new FormAttachment(0, 1000, 9);
 								culSerialLabelLData.top =  new FormAttachment(0, 1000, 8);

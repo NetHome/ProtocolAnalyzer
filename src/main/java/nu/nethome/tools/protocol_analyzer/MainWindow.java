@@ -1009,9 +1009,9 @@ public void updateWindowState(boolean isConfigurationChange) {
 
 	public void displayLevel(int level) {
 		// Only draw level for Audio Sampling device
-		if (m_Model.getSignalHardware() == 0) {
+		//if (m_Model.getSignalHardware() == 0) {
 			m_LevelMeter.drawLevel((25 * level) / 127);
-		}
+		//}
 	}
 
 	/**

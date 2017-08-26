@@ -48,7 +48,7 @@ public class Main implements ProtocolDecoderSink {
 	private SimpleFlankDetector m_FlankDetector;
 	private ProtocolDecoderGroup m_ProtocolDecoders = new ProtocolDecoderGroup();
 	private ProtocolSamplerGroup m_Samplers = new ProtocolSamplerGroup();
-	private RawLocalDecoder m_Raw;
+	private RawDecoder m_Raw;
 	private ArduinoProtocolPort pulsePort;
 	private ProntoDecoder m_ProntoDecoder;
 	private FIRFilter6000 m_Filter;
@@ -118,7 +118,7 @@ public class Main implements ProtocolDecoderSink {
         m_ProtocolDecoders.setTarget(this);
 
         // Create the raw decoder/sampler which also has a protocol decoder interface
-        m_Raw = new RawLocalDecoder();
+        m_Raw = new RawDecoder();
         m_Raw.setTarget( new ProtocolDecoderSink() {
             @Override
             public void parsedMessage(ProtocolMessage message) {
@@ -156,9 +156,26 @@ public class Main implements ProtocolDecoderSink {
 		// Load last settings
 		loadAudioPreferences();
         m_AudioSampler.setSampleRate(sampleRate);
-		
+
+        PulseFilter pulseFilter = new PulseFilter(m_ProtocolDecoders);
+		pulseFilter.setTarget( new ProtocolDecoderSink() {
+			@Override
+			public void parsedMessage(ProtocolMessage message) {
+				// Not needed
+			}
+
+			@Override
+			public void partiallyParsedMessage(String protocol, int bits) {
+				// Not needed
+			}
+
+			@Override
+			public void reportLevel(int level) {
+				outer().reportLevel(level);
+			}
+		});
 		// Create our CUL-Port and attach the decoders directly to it.
-		pulsePort = new ArduinoProtocolPort(m_ProtocolDecoders);
+		pulsePort = new ArduinoProtocolPort(pulseFilter);
 		// Read configuration for our CUL port
 		loadCULPreferences();
 		
@@ -330,7 +347,7 @@ public class Main implements ProtocolDecoderSink {
 		m_ExportTemplate = exportTemplate;
 	}
 
-	public RawLocalDecoder getRawDecoder() {
+	public RawDecoder getRawDecoder() {
 		return m_Raw;
 	}
 
