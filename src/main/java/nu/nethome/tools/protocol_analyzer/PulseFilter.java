@@ -5,16 +5,13 @@ import nu.nethome.util.ps.ProtocolDecoderSink;
 import nu.nethome.util.ps.ProtocolInfo;
 
 import java.util.ArrayDeque;
-import java.util.Timer;
-import java.util.TimerTask;
 
-/**
- *
- */
 public class PulseFilter implements ProtocolDecoder {
 
-    private static final int REQUIRED_GOOD_COUNT = 10;
+    private static final int REQUIRED_GOOD_COUNT = 20;
     private static final int ADDITIONAL_PULSES = 6;
+    private static final double MIN_GOOD_PULSE_LENGTH = 100.0;
+    private static final double MAX_GOOD_PULSE_LENGTH = 3000.0;
 
     private final ProtocolDecoder downStream;
     private ProtocolDecoderSink sink;
@@ -72,7 +69,7 @@ public class PulseFilter implements ProtocolDecoder {
             queue.removeFirst();
         }
         queue.addLast(isMarkPulse ? -pulse : pulse);
-        if ((pulse > 100.0) && (pulse < 3000.0)) {
+        if ((pulse > MIN_GOOD_PULSE_LENGTH) && (pulse < MAX_GOOD_PULSE_LENGTH)) {
             goodCounter += 1;
             if (goodCounter >= REQUIRED_GOOD_COUNT) {
                 goodCounter = REQUIRED_GOOD_COUNT;
