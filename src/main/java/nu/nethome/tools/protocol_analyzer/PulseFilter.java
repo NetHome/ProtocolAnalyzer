@@ -5,6 +5,8 @@ import nu.nethome.util.ps.ProtocolDecoderSink;
 import nu.nethome.util.ps.ProtocolInfo;
 
 import java.util.ArrayDeque;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PulseFilter implements ProtocolDecoder {
 
@@ -19,14 +21,31 @@ public class PulseFilter implements ProtocolDecoder {
     private int goodCounter = 0;
     private boolean isVetting = true;
     private boolean filterIsOpen = false;
+    private volatile int level = 0;
+    private boolean zeroLevelReported = false;
 
     public PulseFilter(ProtocolDecoder downStream) {
         this.downStream = downStream;
+        Timer levelTimer = new Timer("LevelTimer", true);
+        levelTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if ((sink != null) && !((level == 0) && zeroLevelReported)){
+                    sink.reportLevel(level);
+                    zeroLevelReported = (level == 0);
+                }
+                level -= 12;
+                if (level <= 0) {
+                    level = 0;
+                }
+            }
+        }, 1000, 100);
     }
 
     @Override
     public int parse(double pulseLength, boolean state) {
         int result;
+        level = 128;
         if (!filterIsOpen) {
             if (vet(pulseLength, state)) {
                 addVettedPulses();
