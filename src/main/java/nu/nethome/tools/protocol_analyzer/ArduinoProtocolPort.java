@@ -63,8 +63,6 @@ public class ArduinoProtocolPort implements PulseProtocolPort{
                 error = "Could not set serial port parameters";
                 return 1;
             }
-            sendQueryVersionCommand();
-            sendQueryVersionCommand();
         } catch (SerialPortException e) {
             error = "Could not open port " + portName;
             return 1;
@@ -76,7 +74,25 @@ public class ArduinoProtocolPort implements PulseProtocolPort{
             }
         }, "Port receive thread").start();
         isOpen = true;
+        setup();
         return 0;
+    }
+
+    private void setup() {
+        for (int i = 0; i < 20; i++) {
+            sendQueryVersionCommand();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                break;
+            }
+            if (reportedVersion != "") {
+                System.out.printf("Connected after %d retries", 0);
+                sendStartReceivingCommand();
+                return;
+            }
+        }
+        System.out.printf("Failed to get version");
     }
 
     public void close() {
@@ -236,6 +252,14 @@ public class ArduinoProtocolPort implements PulseProtocolPort{
 
     private void sendQueryVersionCommand() {
         writeLine("V");
+    }
+
+    private void sendStartReceivingCommand() {
+        writeLine("R1");
+    }
+
+    private void sendStopReceivingCommand() {
+        writeLine("R0");
     }
 
 
