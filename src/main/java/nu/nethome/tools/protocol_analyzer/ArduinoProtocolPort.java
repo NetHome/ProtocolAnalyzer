@@ -34,6 +34,17 @@ import java.util.List;
  * @author Stefan
  */
 public class ArduinoProtocolPort implements PulseProtocolPort{
+
+    public enum InputChannel {
+        DISABLED(0), RF(1), IR(2);
+
+        public final int number;
+
+        InputChannel(int number) {
+            this.number = number;
+        }
+    }
+
     String portName = "COM4";
     protected SerialPort serialPort;
     protected boolean isOpen = false;
@@ -45,6 +56,7 @@ public class ArduinoProtocolPort implements PulseProtocolPort{
     private int modulationOffPeriod = 0;
     private List<String> portList;
     private String error = "";
+    private InputChannel channel = InputChannel.DISABLED;
 
     public ArduinoProtocolPort(ProtocolDecoder decoder) {
         this.decoder = decoder;
@@ -79,6 +91,7 @@ public class ArduinoProtocolPort implements PulseProtocolPort{
     }
 
     private void setup() {
+        reportedVersion = "";
         for (int i = 0; i < 20; i++) {
             sendQueryVersionCommand();
             try {
@@ -88,7 +101,7 @@ public class ArduinoProtocolPort implements PulseProtocolPort{
             }
             if (reportedVersion != "") {
                 System.out.printf("Connected after %d retries", 0);
-                sendStartReceivingCommand();
+                selectInputChannel(channel);
                 return;
             }
         }
@@ -254,14 +267,9 @@ public class ArduinoProtocolPort implements PulseProtocolPort{
         writeLine("V");
     }
 
-    private void sendStartReceivingCommand() {
-        writeLine("R1");
+    private void selectInputChannel(InputChannel channel) {
+        writeLine("R" + Integer.toString(channel.number));
     }
-
-    private void sendStopReceivingCommand() {
-        writeLine("R0");
-    }
-
 
     /**
      * Write a text line to the serial port. EOL-characters are added to the string
@@ -326,5 +334,13 @@ public class ArduinoProtocolPort implements PulseProtocolPort{
 
     public void setSerialPort(String portName) {
         this.portName = portName;
+    }
+
+    public InputChannel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(InputChannel channel) {
+        this.channel = channel;
     }
 }

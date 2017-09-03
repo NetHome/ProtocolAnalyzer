@@ -693,7 +693,7 @@ public void updateWindowState(boolean isConfigurationChange) {
     }
 	m_StatusText.setText(statusText);
 	if (isConfigurationChange) {
-		m_HWIcon.setImage(getToolImage(m_Model.getSignalHardware() == 0 ? "microphone16.png" : "memorystick16.png" )); //$NON-NLS-1$ //$NON-NLS-2$
+		m_HWIcon.setImage(getToolImage(m_Model.getSignalHardware() == 0 ? "microphone16.png" : "arduino24.png" )); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }
 
@@ -1296,6 +1296,8 @@ public void updateWindowState(boolean isConfigurationChange) {
 
 		String lastCULPort = m_Model.getPulsePort().getSerialPort();
 
+		ArduinoProtocolPort.InputChannel lastPulseChannel = m_Model.getArduinoChannel();
+
 		// Create settings dialog and open it
 		SettingsTabDialog win = new SettingsTabDialog(m_Shell, 0);
 		win.open(m_Model);
@@ -1304,6 +1306,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 		// if it was not changed it means it is restarted
 		if ((lastSource != m_Model.getAudioSampler().getSource()) ||
 				(previousHardware != m_Model.getSignalHardware()) ||
+				(lastPulseChannel != m_Model.getArduinoChannel()) ||
 				(lastChannel != m_Model.getAudioSampler().getChannel()) ||
 				(!lastCULPort.equals(m_Model.getPulsePort().getSerialPort()))) {
 			ports[previousHardware].close();

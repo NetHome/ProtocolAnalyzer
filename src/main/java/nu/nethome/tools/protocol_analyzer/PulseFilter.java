@@ -19,7 +19,7 @@ public class PulseFilter implements ProtocolDecoder {
     private ProtocolDecoderSink sink;
     private ArrayDeque<Double> queue = new ArrayDeque<Double>();
     private int goodCounter = 0;
-    private boolean isVetting = true;
+    private boolean isActive = true;
     private boolean filterIsOpen = false;
     private volatile int level = 0;
     private boolean zeroLevelReported = false;
@@ -44,6 +44,9 @@ public class PulseFilter implements ProtocolDecoder {
 
     @Override
     public int parse(double pulseLength, boolean state) {
+        if (!isActive) {
+            return downStream.parse(pulseLength, state);
+        }
         int result;
         level = 128;
         if (!filterIsOpen) {
@@ -81,9 +84,6 @@ public class PulseFilter implements ProtocolDecoder {
     }
 
     private boolean vet(double pulse, boolean isMarkPulse) {
-        if (!isVetting) {
-            return true;
-        }
         if (queue.size() >= REQUIRED_GOOD_COUNT + ADDITIONAL_PULSES) {
             queue.removeFirst();
         }

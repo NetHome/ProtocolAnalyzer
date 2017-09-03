@@ -69,7 +69,7 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 	private Button invertSelection;
 	private Label label13;
 	private Label label5;
-	private Combo bandWithCombo;
+	private Combo sourceCombo;
 	private Label frequenceLabel;
 	private Text FrequencyText;
 	private Label culSerialLabel;
@@ -528,74 +528,25 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 							group1LData.left =  new FormAttachment(0, 1000, 12);
 							group1LData.top =  new FormAttachment(0, 1000, 81);
 							group1.setLayoutData(group1LData);
-							group1.setText("Radio Settings");
+							group1.setText("Input Settings");
 							{
-								FrequencyText = new Text(group1, SWT.NONE);
-								FrequencyText.setText("433.92");
-								FormData FrequencyTextLData = new FormData();
-								FrequencyTextLData.left =  new FormAttachment(0, 1000, 140);
-								FrequencyTextLData.top =  new FormAttachment(0, 1000, 15);
-								FrequencyTextLData.width = 52;
-								FrequencyTextLData.height = 13;
-								FrequencyText.setLayoutData(FrequencyTextLData);
-							}
-							{
-								frequenceLabel = new Label(group1, SWT.NONE);
-								frequenceLabel.setText("Center Frequency");
-								FormData frequenceLabelLData = new FormData();
-								frequenceLabelLData.left =  new FormAttachment(0, 1000, 9);
-								frequenceLabelLData.top =  new FormAttachment(0, 1000, 15);
-								frequenceLabelLData.width = 125;
-								frequenceLabelLData.height = 15;
-								frequenceLabel.setLayoutData(frequenceLabelLData);
-							}
-							{
-								bandWithCombo = new Combo(group1, SWT.NONE);
+								sourceCombo = new Combo(group1, SWT.NONE);
 								FormData bandWithComboLData = new FormData();
-								bandWithComboLData.left =  new FormAttachment(0, 1000, 140);
+								bandWithComboLData.left =  new FormAttachment(0, 1000, 116);
 								bandWithComboLData.top =  new FormAttachment(0, 1000, 40);
-								bandWithComboLData.width = 81;
+								bandWithComboLData.width = 169;
 								bandWithComboLData.height = 21;
-								bandWithCombo.setLayoutData(bandWithComboLData);
-							}
-							{
-								label5 = new Label(group1, SWT.NONE);
-								label5.setText("MHz");
-								FormData label5LData = new FormData();
-								label5LData.left =  new FormAttachment(0, 1000, 210);
-								label5LData.top =  new FormAttachment(0, 1000, 15);
-								label5LData.width = 59;
-								label5LData.height = 15;
-								label5.setLayoutData(label5LData);
+								sourceCombo.setLayoutData(bandWithComboLData);
 							}
 							{
 								label13 = new Label(group1, SWT.NONE);
-								label13.setText("Bandwith");
+								label13.setText("Signal Source");
 								FormData label13LData = new FormData();
 								label13LData.left =  new FormAttachment(0, 1000, 9);
 								label13LData.top =  new FormAttachment(0, 1000, 40);
 								label13LData.width = 125;
 								label13LData.height = 15;
 								label13.setLayoutData(label13LData);
-							}
-							{
-								agcCombo = new Combo(group1, SWT.NONE);
-								FormData agcComboLData = new FormData();
-								agcComboLData.left =  new FormAttachment(0, 1000, 140);
-								agcComboLData.top =  new FormAttachment(0, 1000, 73);
-								agcComboLData.width = 81;
-								agcComboLData.height = 21;
-								agcCombo.setLayoutData(agcComboLData);
-							}
-							{
-								label14 = new Label(group1, SWT.NONE);
-								label14.setText("AGC");
-								FormData label14LData = new FormData();
-								label14LData.left =  new FormAttachment(0, 1000, 9);
-								label14LData.top =  new FormAttachment(0, 1000, 73);
-								label14LData.width = 119;
-								label14LData.height = 15;
-								label14.setLayoutData(label14LData);
 							}
 						}
 					}
@@ -708,9 +659,12 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 		}
 		bandWithCombo.select(m_Model.getPulsePort().getBandwidthOrdinal());
 		*/
-		
+		sourceCombo.add("RF-Signal (Radio)");
+		sourceCombo.add("IR-Signal");
+		sourceCombo.select(m_Model.getArduinoChannel().number - 1);
 		// AGC settings
 		//agcCombo.add(String.format("%06X", m_Model.getPulsePort().getAGCSettings()));
+		/*
 		agcCombo.add("030091");
 		agcCombo.add("040091");
 		agcCombo.add("050091");
@@ -722,7 +676,7 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 		agcCombo.add("060092");
 		agcCombo.add("070092");
 		agcCombo.select(0);
-		
+		*/
 		// FrequencyText.setText(Double.toString(m_Model.getPulsePort().getRadioFrequency()/1000000.0));
 	}
 
@@ -771,6 +725,11 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 			else {
 				m_Model.setSignalHardware(0);
 			}
+			if (sourceCombo.getSelectionIndex() == 0) {
+				m_Model.setArduinoChannel(ArduinoProtocolPort.InputChannel.RF);
+			} else {
+				m_Model.setArduinoChannel(ArduinoProtocolPort.InputChannel.IR);
+			}
 			
 			//m_Model.getPulsePort().setBandwidthOrdinal(bandWithCombo.getSelectionIndex());
 			
@@ -809,8 +768,8 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 		return FrequencyText;
 	}
 	
-	public Combo getBandWithCombo() {
-		return bandWithCombo;
+	public Combo getSourceCombo() {
+		return sourceCombo;
 	}
 
 }

@@ -34,7 +34,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-
+/**
+ * TODO: Turn pulse filter on/off
+ * TODO: Tune reception - count hi/lo ?
+ * TODO: Fix installation
+ *
+ * TODO: Send simple pulse train
+ * TODO: HomeItem
+ * TODO: Send modulated pulses
+ */
 public class Main implements ProtocolDecoderSink {
 
     private static final float STANDARD_SAMPLE_FREQUENCY = 44100.0F;
@@ -103,6 +111,7 @@ public class Main implements ProtocolDecoderSink {
 		m_ProtocolDecoders.add(new FineOffsetDecoder());
 		m_ProtocolDecoders.add(new RollerTrolDecoder());
 		m_ProtocolDecoders.add(new RollerTrolGDecoder());
+		m_ProtocolDecoders.add(new PrologueDecoder());
 		m_ProntoDecoder = new ProntoDecoder(); // Has extra settings which needs to be exposed
 		m_ProtocolDecoders.add(m_ProntoDecoder);
 		
@@ -313,6 +322,9 @@ public class Main implements ProtocolDecoderSink {
 	public void loadCULPreferences() {
 		Preferences p = Preferences.userNodeForPackage(this.getClass());
 		pulsePort.setSerialPort(p.get("CULPort", pulsePort.getSerialPort()));
+		int channel = p.getInt("CULChannel", pulsePort.getChannel().number);
+		pulsePort.setChannel(channel == ArduinoProtocolPort.InputChannel.RF.number ?
+				ArduinoProtocolPort.InputChannel.RF : ArduinoProtocolPort.InputChannel.IR);
 	}
 	
 	/**
@@ -321,6 +333,7 @@ public class Main implements ProtocolDecoderSink {
 	public void saveCULPreferences() {
 		Preferences p = Preferences.userNodeForPackage(this.getClass());
 		p.put("CULPort", pulsePort.getSerialPort());
+		p.putInt("CULChannel", pulsePort.getChannel().number);
 	}
 
 	public AudioProtocolPort getAudioSampler() {
@@ -366,4 +379,12 @@ public class Main implements ProtocolDecoderSink {
     public SignalInverter getInverter() {
         return inverter;
     }
+
+	public ArduinoProtocolPort.InputChannel getArduinoChannel() {
+		return pulsePort.getChannel();
+	}
+
+	public void setArduinoChannel(ArduinoProtocolPort.InputChannel arduinoChannel) {
+		this.pulsePort.setChannel(arduinoChannel);
+	}
 }
