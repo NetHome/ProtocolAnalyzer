@@ -179,8 +179,8 @@ public class ArduinoProtocolPort implements PulseProtocolPort{
         if (commandString.length() != 10) {
             return;
         }
-        double space = Integer.parseInt(commandString.substring(1, 5), 16);
-        double mark = Integer.parseInt(commandString.substring(5, 9), 16);
+        double space = Integer.parseInt(commandString.substring(1, 5), 16) * 16.0;
+        double mark = Integer.parseInt(commandString.substring(5, 9), 16) * 16.0;
         decoder.parse(space, false);
         decoder.parse(mark, true);
     }

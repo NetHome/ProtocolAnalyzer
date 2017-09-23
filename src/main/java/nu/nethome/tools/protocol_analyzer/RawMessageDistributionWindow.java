@@ -133,7 +133,7 @@ public class RawMessageDistributionWindow {
 	    // Create a collection for plotting signal
 	    m_SignalSeriesCollection = new XYSeriesCollection();
 
-	    // Check what kind of data we have, if it is only pulses, the just generate
+	    // Check what kind of data we have, if it is only pulses, then just generate
 	    // the pulse series and if we have samples, then generate the sampleSeries as well
 	    if (m_Message.m_Samples.size() == 0) {
 	    	// Just generate pulse series
@@ -141,7 +141,7 @@ public class RawMessageDistributionWindow {
 	    		pulseSeries.add(x, level ? PARSED_0 : PARSED_1);
 		    	level = !level;
 		    	pulseSeries.add(x, level ? PARSED_0 : PARSED_1);
-		    	x += pulse;
+		    	x += pulse / 1000.0;
 		    	pulseSeries.add(x, level ? PARSED_0 : PARSED_1);
 	    	}
 	    } else {

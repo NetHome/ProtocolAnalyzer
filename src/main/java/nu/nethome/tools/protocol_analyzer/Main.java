@@ -35,13 +35,15 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
- * TODO: Turn pulse filter on/off
+ * TODO: Cut raw sample on 500mS
  * TODO: Tune reception - count hi/lo ?
  * TODO: Fix installation
- *
+ * TODO: Fake 0 mark pulses when no data
  * TODO: Send simple pulse train
  * TODO: HomeItem
  * TODO: Send modulated pulses
+ *
+ * DONE: Turn pulse filter on/off
  */
 public class Main implements ProtocolDecoderSink {
 
@@ -62,7 +64,8 @@ public class Main implements ProtocolDecoderSink {
 	private FIRFilter6000 m_Filter;
     private RawPluginScanner m_PluginProvider = new RawPluginScanner();
     private SignalInverter inverter;
-	
+	private PulseFilter pulseFilter;
+
 
 	public void parsedMessage(ProtocolMessage message) {
 		m_View.parsedMessage(message);
@@ -166,8 +169,8 @@ public class Main implements ProtocolDecoderSink {
 		loadAudioPreferences();
         m_AudioSampler.setSampleRate(sampleRate);
 
-        PulseFilter pulseFilter = new PulseFilter(m_ProtocolDecoders);
-		pulseFilter.setTarget( new ProtocolDecoderSink() {
+		pulseFilter = new PulseFilter(m_ProtocolDecoders);
+		pulseFilter.setTarget(new ProtocolDecoderSink() {
 			@Override
 			public void parsedMessage(ProtocolMessage message) {
 				// Not needed
@@ -325,6 +328,7 @@ public class Main implements ProtocolDecoderSink {
 		int channel = p.getInt("CULChannel", pulsePort.getChannel().number);
 		pulsePort.setChannel(channel == ArduinoProtocolPort.InputChannel.RF.number ?
 				ArduinoProtocolPort.InputChannel.RF : ArduinoProtocolPort.InputChannel.IR);
+		pulseFilter.setActive(p.getBoolean("PulseFilter", true));
 	}
 	
 	/**
@@ -334,6 +338,7 @@ public class Main implements ProtocolDecoderSink {
 		Preferences p = Preferences.userNodeForPackage(this.getClass());
 		p.put("CULPort", pulsePort.getSerialPort());
 		p.putInt("CULChannel", pulsePort.getChannel().number);
+		p.putBoolean("PulseFilter", pulseFilter.isActive());
 	}
 
 	public AudioProtocolPort getAudioSampler() {
@@ -376,7 +381,11 @@ public class Main implements ProtocolDecoderSink {
 		return m_Filter;
 	}
 
-    public SignalInverter getInverter() {
+	public PulseFilter getPulseFilter() {
+		return pulseFilter;
+	}
+
+	public SignalInverter getInverter() {
         return inverter;
     }
 

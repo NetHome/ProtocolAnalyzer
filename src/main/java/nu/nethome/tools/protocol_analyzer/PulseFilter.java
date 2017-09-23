@@ -44,11 +44,11 @@ public class PulseFilter implements ProtocolDecoder {
 
     @Override
     public int parse(double pulseLength, boolean state) {
+        level = 128;
         if (!isActive) {
             return downStream.parse(pulseLength, state);
         }
         int result;
-        level = 128;
         if (!filterIsOpen) {
             if (vet(pulseLength, state)) {
                 addVettedPulses();
@@ -98,5 +98,14 @@ public class PulseFilter implements ProtocolDecoder {
             goodCounter = 0;
         }
         return false;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive)
+    {
+        this.isActive = isActive;
     }
 }

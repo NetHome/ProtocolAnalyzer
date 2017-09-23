@@ -84,6 +84,7 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 	private Label label11;
 	private Label label6;
 	private Button useFilter;
+	private Button useNoiseFilter;
 	private Label label2;
 	private Text swing;
 	private Text length;
@@ -530,6 +531,17 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 							group1.setLayoutData(group1LData);
 							group1.setText("Input Settings");
 							{
+								useNoiseFilter = new Button(group1, SWT.CHECK | SWT.LEFT);
+								useNoiseFilter.setSelection(m_Model.getPulseFilter().isActive());
+								useNoiseFilter.setText("Apply digital noise filter");
+								FormData useFilterLData = new FormData();
+								useFilterLData.width = 231;
+								useFilterLData.height = 15;
+								useFilterLData.left =  new FormAttachment(0, 1000, 9);
+								useFilterLData.top =  new FormAttachment(0, 1000, 15);
+								useNoiseFilter.setLayoutData(useFilterLData);
+							}
+							{
 								sourceCombo = new Combo(group1, SWT.NONE);
 								FormData bandWithComboLData = new FormData();
 								bandWithComboLData.left =  new FormAttachment(0, 1000, 116);
@@ -725,6 +737,8 @@ public class SettingsTabDialog extends org.eclipse.swt.widgets.Dialog {
 			else {
 				m_Model.setSignalHardware(0);
 			}
+
+			m_Model.getPulseFilter().setActive(useNoiseFilter.getSelection());
 			if (sourceCombo.getSelectionIndex() == 0) {
 				m_Model.setArduinoChannel(ArduinoProtocolPort.InputChannel.RF);
 			} else {
