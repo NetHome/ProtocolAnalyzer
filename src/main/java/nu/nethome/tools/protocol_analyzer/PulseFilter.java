@@ -12,7 +12,7 @@ public class PulseFilter implements ProtocolDecoder {
 
     private static final int REQUIRED_GOOD_COUNT = 20;
     private static final int ADDITIONAL_PULSES = 6;
-    private static final double MIN_GOOD_PULSE_LENGTH = 100.0;
+    private static final double MIN_GOOD_PULSE_LENGTH = 150.0;
     private static final double MAX_GOOD_PULSE_LENGTH = 3000.0;
 
     private final ProtocolDecoder downStream;
@@ -23,6 +23,7 @@ public class PulseFilter implements ProtocolDecoder {
     private boolean filterIsOpen = false;
     private volatile int level = 0;
     private boolean zeroLevelReported = false;
+    private double badLevel = 0;
 
     public PulseFilter(ProtocolDecoder downStream) {
         this.downStream = downStream;
@@ -53,12 +54,26 @@ public class PulseFilter implements ProtocolDecoder {
             if (vet(pulseLength, state)) {
                 addVettedPulses();
                 filterIsOpen = true;
+                badLevel = 0;
             }
             result = 0;
         } else {
+            if (isaGoodPulse(pulseLength)) {
+                badLevel -= 0.01;
+                if (badLevel < 0) {
+                    badLevel = 0;
+                }
+            } else {
+                badLevel += 2.0;
+            }
+            if ((badLevel > 3.0) && !state) {
+                pulseLength = 29000 + 1;
+            }
             result = downStream.parse(pulseLength, state);
             if (pulseLength > 29000) {
                 filterIsOpen = false;
+                goodCounter = 0;
+                queue.clear();
             }
         }
         return result;
@@ -88,7 +103,7 @@ public class PulseFilter implements ProtocolDecoder {
             queue.removeFirst();
         }
         queue.addLast(isMarkPulse ? -pulse : pulse);
-        if ((pulse > MIN_GOOD_PULSE_LENGTH) && (pulse < MAX_GOOD_PULSE_LENGTH)) {
+        if (isaGoodPulse(pulse)) {
             goodCounter += 1;
             if (goodCounter >= REQUIRED_GOOD_COUNT) {
                 goodCounter = REQUIRED_GOOD_COUNT;
@@ -98,6 +113,10 @@ public class PulseFilter implements ProtocolDecoder {
             goodCounter = 0;
         }
         return false;
+    }
+
+    private boolean isaGoodPulse(double pulse) {
+        return (pulse > MIN_GOOD_PULSE_LENGTH) && (pulse < MAX_GOOD_PULSE_LENGTH);
     }
 
     public boolean isActive() {

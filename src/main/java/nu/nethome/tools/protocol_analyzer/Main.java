@@ -38,6 +38,7 @@ import java.util.prefs.Preferences;
  * TODO: Cut raw sample on 500mS
  * TODO: Tune reception - count hi/lo ?
  * TODO: Fix installation
+ * TODO: Pulse Filter breaks when no real signal
  * TODO: Fake 0 mark pulses when no data
  * TODO: Send simple pulse train
  * TODO: HomeItem
@@ -46,6 +47,7 @@ import java.util.prefs.Preferences;
  * DONE: Turn pulse filter on/off
  */
 public class Main implements ProtocolDecoderSink {
+
 
     private static final float STANDARD_SAMPLE_FREQUENCY = 44100.0F;
     public static final int AUDIO_SAMPLER = 0;
