@@ -89,7 +89,51 @@ public class PulseLengthAnalyzerTest {
         }
         PulseLengthAnalyzer.Pulse pulse1 = pulseLengthAnalyzer.getPulse();
         assertThat(pulse1.length, is(1.0));
+        PulseLengthAnalyzer.Pulse pulse2 = pulseLengthAnalyzer.getPulse();
+        assertThat(pulse2.length, is(2.0));
     }
 
+    @Test
+    public void groupCountIsSIZEUntilSIZEPulsesHasBeenSeen() throws Exception {
+        for (int i = 0; i < SIZE - 1; i++) {
+            pulseLengthAnalyzer.addPulse(10.0, true);
+            assertThat(pulseLengthAnalyzer.groupCount(SIZE), is(SIZE));
+        }
+    }
 
+    @Test
+    public void findsOneGroupWhenAllValuesAreSame() throws Exception {
+        for (int i = 0; i < SIZE ; i++) {
+            pulseLengthAnalyzer.addPulse(10.0, true);
+        }
+        assertThat(pulseLengthAnalyzer.groupCount(SIZE), is(1));
+    }
+
+    @Test
+    public void finds3GroupsWhen3DifferentValuesAreAdded() throws Exception {
+        for (int i = 0; i < SIZE ; i++) {
+            pulseLengthAnalyzer.addPulse((i % 3) + 1, true);
+        }
+        assertThat(pulseLengthAnalyzer.groupCount(SIZE), is(3));
+    }
+
+    @Test
+    public void countsOnlyMarkPulsesInGroups() throws Exception {
+        for (int i = 0; i < SIZE ; i++) {
+            pulseLengthAnalyzer.addPulse(i, false);
+            pulseLengthAnalyzer.addPulse(i % 3, true);
+        }
+        assertThat(pulseLengthAnalyzer.groupCount(SIZE), is(3));
+    }
+
+    @Test
+    public void countsOnlySpecifiedNumberOfPulsesInGroups() throws Exception {
+        for (int i = 0; i < SIZE ; i++) {
+            pulseLengthAnalyzer.addPulse(i, false);
+            pulseLengthAnalyzer.addPulse((i % 3) + 1, true);
+        }
+        assertThat(pulseLengthAnalyzer.groupCount(1), is(1));
+        assertThat(pulseLengthAnalyzer.groupCount(3), is(2));
+        assertThat(pulseLengthAnalyzer.groupCount(5), is(3));
+    }
 }
