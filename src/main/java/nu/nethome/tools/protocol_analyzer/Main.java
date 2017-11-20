@@ -66,7 +66,7 @@ public class Main implements ProtocolDecoderSink {
 	private FIRFilter6000 m_Filter;
     private RawPluginScanner m_PluginProvider = new RawPluginScanner();
     private SignalInverter inverter;
-	private PulseFilter pulseFilter;
+	private PulseLengthFilter pulseFilter;
 
 
 	public void parsedMessage(ProtocolMessage message) {
@@ -171,7 +171,7 @@ public class Main implements ProtocolDecoderSink {
 		loadAudioPreferences();
         m_AudioSampler.setSampleRate(sampleRate);
 
-		pulseFilter = new PulseFilter(m_ProtocolDecoders);
+		pulseFilter = new PulseLengthFilter(m_ProtocolDecoders);
 		pulseFilter.setTarget(new ProtocolDecoderSink() {
 			@Override
 			public void parsedMessage(ProtocolMessage message) {
@@ -383,7 +383,7 @@ public class Main implements ProtocolDecoderSink {
 		return m_Filter;
 	}
 
-	public PulseFilter getPulseFilter() {
+	public PulseLengthFilter getPulseFilter() {
 		return pulseFilter;
 	}
 

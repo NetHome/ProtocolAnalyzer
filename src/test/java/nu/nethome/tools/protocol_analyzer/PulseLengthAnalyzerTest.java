@@ -136,4 +136,18 @@ public class PulseLengthAnalyzerTest {
         assertThat(pulseLengthAnalyzer.groupCount(3), is(2));
         assertThat(pulseLengthAnalyzer.groupCount(5), is(3));
     }
+
+    @Test
+    public void pulsesWithin10PercentCountsInSameGroup() throws Exception {
+        final double pulse = 1000.0;
+        double ninePercent = pulse * 0.09;
+        pulseLengthAnalyzer.addPulse(pulse, true);
+        for (int i = 0; i < SIZE ; i++) {
+            pulseLengthAnalyzer.addPulse(pulse, false);
+            pulseLengthAnalyzer.addPulse(pulse + ninePercent, true);
+            ninePercent = -ninePercent;
+        }
+        pulseLengthAnalyzer.addPulse(pulse, true);
+        assertThat(pulseLengthAnalyzer.groupCount(SIZE), is(1));
+    }
 }

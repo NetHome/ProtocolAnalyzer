@@ -4,56 +4,41 @@ import nu.nethome.util.ps.ProtocolDecoder;
 import nu.nethome.util.ps.ProtocolDecoderSink;
 import nu.nethome.util.ps.ProtocolInfo;
 
-import java.util.ArrayDeque;
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class PulseLengthFilter implements ProtocolDecoder {
 
-    private static final int REQUIRED_GOOD_COUNT = 20;
-    private static final int ADDITIONAL_PULSES = 6;
-
-
+    private static final int BUFFER_SIZE = 25;
+    private static final int PULSES_BACK = 20;
+    private static final PulseLengthAnalyzer.PulseRequirements openReq =
+            new PulseLengthAnalyzer.PulseRequirements(PULSES_BACK, 130.0, 2, 2, false);
+    private static final PulseLengthAnalyzer.PulseRequirements closeReq =
+            new PulseLengthAnalyzer.PulseRequirements(PULSES_BACK/2, 10.0, 3, 4, true);
     private final ProtocolDecoder downStream;
-    private ProtocolDecoderSink sink;
-    private int goodCounter = 0;
+    private final PulseLevelReporter pulseLevelReporter = new PulseLevelReporter();
+    private final PulseLengthAnalyzer analyzer = new PulseLengthAnalyzer(BUFFER_SIZE);
     private boolean isActive = true;
     private boolean filterIsOpen = false;
-    private volatile int level = 0;
-    private boolean zeroLevelReported = false;
 
     public PulseLengthFilter(ProtocolDecoder downStream) {
         this.downStream = downStream;
-        Timer levelTimer = new Timer("LevelTimer", true);
-        levelTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if ((sink != null) && !((level == 0) && zeroLevelReported)){
-                    sink.reportLevel(level);
-                    zeroLevelReported = (level == 0);
-                }
-                level -= 12;
-                if (level <= 0) {
-                    level = 0;
-                }
-            }
-        }, 1000, 100);
     }
 
     @Override
     public int parse(double pulseLength, boolean state) {
-        level = 128;
+        pulseLevelReporter.reportPulse();
+        analyzer.addPulse(pulseLength, state);
         if (!isActive) {
             return downStream.parse(pulseLength, state);
         }
-        int result;
+        int result = 0;
         if (!filterIsOpen) {
-            if (vet(pulseLength, state)) {
-                addVettedPulses();
+            if (analyzer.vetPulses(openReq)) {
+                result = addBufferedPulses();
                 filterIsOpen = true;
             }
-            result = 0;
         } else {
+            if ((!analyzer.vetPulses(closeReq)) && !state) {
+                pulseLength = 29000 + 1;
+            }
             result = downStream.parse(pulseLength, state);
             if (pulseLength > 29000) {
                 filterIsOpen = false;
@@ -69,18 +54,21 @@ public class PulseLengthFilter implements ProtocolDecoder {
 
     @Override
     public void setTarget(ProtocolDecoderSink sink) {
-        this.sink = sink;
+        pulseLevelReporter.setTarget(sink);
     }
 
-    private void addVettedPulses() {
-        // NYI
+    private int addBufferedPulses() {
+        boolean isFirst = true;
+        while (analyzer.pulseCount() > 0) {
+            PulseLengthAnalyzer.Pulse pulse = analyzer.getPulse();
+            if (isFirst && pulse.isMark) {
+                continue;
+            }
+            downStream.parse(pulse.length, pulse.isMark);
+            isFirst = false;
+        }
+        return 0;
     }
-
-    private boolean vet(double pulse, boolean isMarkPulse) {
-        // NYI
-        return false;
-    }
-
 
     public boolean isActive() {
         return isActive;
