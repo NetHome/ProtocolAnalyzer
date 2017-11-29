@@ -54,7 +54,7 @@ import java.util.List;
  *
  * ToDo - Sort on frequency so the intervals are chose better interval  
  */
-public class RawMessageDistributionWindow {
+public class RawSignalWindow {
 
     private final static int PARSED_0 = -200;
     private final static int PARSED_1 = -150;
@@ -73,7 +73,7 @@ public class RawMessageDistributionWindow {
     private XYSeries selectedIntervalSeries;
     private XYSeriesCollection signalSeriesCollection;
 
-    public RawMessageDistributionWindow(Display display, RawProtocolMessage message) {
+    public RawSignalWindow(Display display, RawProtocolMessage message) {
         rawMessage = message;
         shell = new Shell(display);
         shell.setSize(1000, 500);

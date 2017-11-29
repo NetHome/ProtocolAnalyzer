@@ -1156,7 +1156,7 @@ public void updateWindowState(boolean isConfigurationChange) {
 		if (message.getProtocol().compareTo("Raw") == 0) {  //$NON-NLS-1$
 			System.out.println(message.getProtocol());
 			RawProtocolMessage mess = (RawProtocolMessage) message;
-			RawMessageDistributionWindow GUI = new RawMessageDistributionWindow(m_Display, mess);
+			RawSignalWindow GUI = new RawSignalWindow(m_Display, mess);
 			GUI.open();
 		} else {
 			System.out.println(message.getProtocol());
