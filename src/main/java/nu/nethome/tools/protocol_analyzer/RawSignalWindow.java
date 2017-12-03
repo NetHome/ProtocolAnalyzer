@@ -75,88 +75,15 @@ public class RawSignalWindow {
 
     public RawSignalWindow(Display display, RawProtocolMessage message) {
         rawMessage = message;
-        shell = new Shell(display);
-        shell.setSize(1000, 500);
-        shell.setLayout(new GridLayout());
-        shell.setText("Undecoded Signal");
-        Image image = new Image(display, this.getClass().getClassLoader().getResourceAsStream("nu/nethome/tools/protocol_analyzer/radar16.png"));
-        shell.setImage(image);
+        shell = createShell(display);
+        CTabFolder chartFolder = createTabFolder(this.shell);
 
-        selectedIntervalSeries = new XYSeries("Selected Interval");
-        selectedPulseSeries = new XYSeries("Selected Pulses", false);
+        createSignalTab(message, chartFolder);
 
-        // Check what kind of data we have, if it is only pulses, then just generate
-        // the pulse series and if we have samples, then generate the sampleSeries as well
-        if (messageHasOnlyPulseData()) {
-            signalSeriesCollection = createPlotDataFromPulsesOnly(message.m_PulseLengths);
-        } else {
-            signalSeriesCollection = createPlotDataFromSamplesAndPulses(message.m_Samples);
-        }
-        signalSeriesCollection.addSeries(selectedPulseSeries);
-
-        distributionData = createPulseDistributionPlot(message.m_PulseLengths);
-        distributionData.addSeries(selectedIntervalSeries);
-
-        // Create Tab Folder for the charts
-        CTabFolder chartFolder = new CTabFolder(shell, SWT.NONE);
-        GridData folderGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
-        folderGridData.grabExcessHorizontalSpace = true;
-        folderGridData.grabExcessVerticalSpace = false;
-        folderGridData.heightHint = 280;
-        chartFolder.setLayoutData(folderGridData);
-
-        // Create tab for signal
-        CTabItem signalTab = new CTabItem(chartFolder, SWT.NONE);
-        signalTab.setText("Signal");
-
-        // Create a Chart and a panel for signal
-        JFreeChart chart = ChartFactory.createXYLineChart("Signal", "ms", "Amplitude", signalSeriesCollection, PlotOrientation.VERTICAL, true, false, false);
-        ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new Dimension(700, 290));
-        configurePanelLooks(chart, 2);
-
-        // Create a ChartComposite on our window
-        ChartComposite frame = new ChartComposite(chartFolder, SWT.NONE, chart, true);
-        frame.setHorizontalAxisTrace(false);
-        frame.setVerticalAxisTrace(false);
-        frame.setDisplayToolTips(true);
-        GridData gridDatap = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
-        gridDatap.grabExcessHorizontalSpace = true;
-        gridDatap.grabExcessVerticalSpace = false;
-        //gridDatap.heightHint = 270;
-        frame.setLayoutData(gridDatap);
-        signalTab.setControl(frame);
-
-        // Create tab for pulse distribution
-        CTabItem distributionTab = new CTabItem(chartFolder, SWT.NONE);
-        distributionTab.setText("Pulse length Distribution");
-
-        // Create a Chart and a panel for pulse length distribution
-        JFreeChart distributionChart = ChartFactory.createXYLineChart("Pulse Length Distribution", "Pulse Length (us)", "# Pulses", distributionData, PlotOrientation.VERTICAL, true, false, false);
-        ChartPanel distributionChartPanel = new ChartPanel(distributionChart);
-        configurePanelLooks(distributionChart, 2);
-        distributionChartPanel.setPreferredSize(new Dimension(700, 270));// 270
-
-        // Make the mark line dashed, so we can see the space line when they overlap
-        float pattern[] = {5.0f, 5.0f};
-        BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);
-        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) distributionChart.getXYPlot().getRenderer();
-        renderer.setSeriesStroke(0, stroke);
-
-        // Create a ChartComposite on our tab for pulse distribution
-        ChartComposite distributionFrame = new ChartComposite(chartFolder, SWT.NONE, distributionChart, true);
-        distributionFrame.setHorizontalAxisTrace(false);
-        distributionFrame.setVerticalAxisTrace(false);
-        distributionFrame.setDisplayToolTips(true);
-        GridData distributionGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
-        distributionGridData.grabExcessHorizontalSpace = true;
-        distributionGridData.grabExcessVerticalSpace = false;
-        distributionGridData.heightHint = 270;
-        distributionFrame.setLayoutData(distributionGridData);
-        distributionTab.setControl(distributionFrame);
+        createPulseDistributionTab(message, chartFolder);
 
         // Create the pulse group table
-        table = new Table(shell, SWT.SINGLE | SWT.BORDER
+        table = new Table(this.shell, SWT.SINGLE | SWT.BORDER
                 | SWT.FULL_SELECTION);
         GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL);
         gridData.grabExcessHorizontalSpace = true;
@@ -211,6 +138,94 @@ public class RawSignalWindow {
 
         });
 
+    }
+
+    private void createPulseDistributionTab(RawProtocolMessage message, CTabFolder chartFolder) {
+        distributionData = createPulseDistributionPlot(message.m_PulseLengths);
+        selectedIntervalSeries = new XYSeries("Selected Interval");
+        distributionData.addSeries(selectedIntervalSeries);
+
+        CTabItem distributionTab = new CTabItem(chartFolder, SWT.NONE);
+        distributionTab.setText("Pulse length Distribution");
+
+        // Create a Chart and a panel for pulse length distribution
+        JFreeChart distributionChart = ChartFactory.createXYLineChart("Pulse Length Distribution", "Pulse Length (us)", "# Pulses", distributionData, PlotOrientation.VERTICAL, true, false, false);
+        ChartPanel distributionChartPanel = new ChartPanel(distributionChart);
+        configurePanelLooks(distributionChart, 2);
+        distributionChartPanel.setPreferredSize(new Dimension(700, 270));// 270
+
+        // Make the mark line dashed, so we can see the space line when they overlap
+        float pattern[] = {5.0f, 5.0f};
+        BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) distributionChart.getXYPlot().getRenderer();
+        renderer.setSeriesStroke(0, stroke);
+
+        // Create a ChartComposite on our tab for pulse distribution
+        ChartComposite distributionFrame = new ChartComposite(chartFolder, SWT.NONE, distributionChart, true);
+        distributionFrame.setHorizontalAxisTrace(false);
+        distributionFrame.setVerticalAxisTrace(false);
+        distributionFrame.setDisplayToolTips(true);
+        GridData distributionGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
+        distributionGridData.grabExcessHorizontalSpace = true;
+        distributionGridData.grabExcessVerticalSpace = false;
+        distributionGridData.heightHint = 270;
+        distributionFrame.setLayoutData(distributionGridData);
+        distributionTab.setControl(distributionFrame);
+    }
+
+    private void createSignalTab(RawProtocolMessage message, CTabFolder chartFolder) {
+        // Check what kind of data we have, if it is only pulses, then just generate
+        // the pulse series and if we have samples, then generate the sampleSeries as well
+        if (messageHasOnlyPulseData()) {
+            signalSeriesCollection = createPlotDataFromPulsesOnly(message.m_PulseLengths);
+        } else {
+            signalSeriesCollection = createPlotDataFromSamplesAndPulses(message.m_Samples);
+        }
+        selectedPulseSeries = new XYSeries("Selected Pulses", false);
+        signalSeriesCollection.addSeries(selectedPulseSeries);
+
+        // Create tab for signal
+        CTabItem signalTab = new CTabItem(chartFolder, SWT.NONE);
+        signalTab.setText("Signal");
+
+        // Create a Chart and a panel for signal
+        JFreeChart chart = ChartFactory.createXYLineChart("Signal", "ms", "Amplitude", signalSeriesCollection, PlotOrientation.VERTICAL, true, false, false);
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new Dimension(700, 290));
+        configurePanelLooks(chart, 2);
+
+        // Create a ChartComposite on our window
+        ChartComposite frame = new ChartComposite(chartFolder, SWT.NONE, chart, true);
+        frame.setHorizontalAxisTrace(false);
+        frame.setVerticalAxisTrace(false);
+        frame.setDisplayToolTips(true);
+        GridData gridDatap = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
+        gridDatap.grabExcessHorizontalSpace = true;
+        gridDatap.grabExcessVerticalSpace = false;
+        //gridDatap.heightHint = 270;
+        frame.setLayoutData(gridDatap);
+        signalTab.setControl(frame);
+    }
+
+    private Shell createShell(Display display) {
+        Shell shell_x;
+        shell_x = new Shell(display);
+        shell_x.setSize(1000, 500);
+        shell_x.setLayout(new GridLayout());
+        shell_x.setText("Undecoded Signal");
+        Image image = new Image(display, this.getClass().getClassLoader().getResourceAsStream("nu/nethome/tools/protocol_analyzer/radar16.png"));
+        shell_x.setImage(image);
+        return shell_x;
+    }
+
+    private CTabFolder createTabFolder(Shell shell1) {
+        CTabFolder chartFolder = new CTabFolder(shell1, SWT.NONE);
+        GridData folderGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
+        folderGridData.grabExcessHorizontalSpace = true;
+        folderGridData.grabExcessVerticalSpace = false;
+        folderGridData.heightHint = 280;
+        chartFolder.setLayoutData(folderGridData);
+        return chartFolder;
     }
 
     /**
