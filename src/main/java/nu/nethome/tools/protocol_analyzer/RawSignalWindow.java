@@ -408,6 +408,11 @@ public class RawSignalWindow {
      * @param isMark true if we shall indicate mark pulses, false for space pulses
      */
     protected void markPulseInterval(double minLength, double maxLength, boolean isMark) {
+        markSelectedPulses(minLength, maxLength, isMark, this.rawMessage);
+        markSelectedPulseLengthInterval(minLength, maxLength);
+    }
+
+    private void markSelectedPulses(double minLength, double maxLength, boolean isMark, RawProtocolMessage rawMessage) {
         Iterator<Integer> samples = rawMessage.m_Samples.iterator();
         Iterator<Integer> pulses = rawMessage.m_PulseList.iterator();
 
@@ -420,11 +425,9 @@ public class RawSignalWindow {
 
         // Remove the selection data series from the view to speed up handling
         signalSeriesCollection.removeSeries(selectedPulseSeries);
-        distributionData.removeSeries(selectedIntervalSeries);
 
         // Clear them
         selectedPulseSeries.clear();
-        markSelectedPulseLengthInterval(minLength, maxLength);
 
         // Check what kind of data we have, if it is only pulses, generate from them
         // and if we have samples, then generate from the samples
@@ -477,6 +480,7 @@ public class RawSignalWindow {
     }
 
     private void markSelectedPulseLengthInterval(double minLength, double maxLength) {
+        distributionData.removeSeries(selectedIntervalSeries);
         selectedIntervalSeries.clear();
 
         // Mark the selected region in the pulse distribution graph
