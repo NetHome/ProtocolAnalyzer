@@ -424,16 +424,7 @@ public class RawSignalWindow {
 
         // Clear them
         selectedPulseSeries.clear();
-        selectedIntervalSeries.clear();
-
-        // Mark the selected region in the pulse distribution graph
-        selectedIntervalSeries.add(((int) (minLength / 10)) * 10, 0);
-        selectedIntervalSeries.add(((int) (maxLength / 10)) * 10 + 10, 0);
-        selectedIntervalSeries.add(Float.NaN, Float.NaN);
-
-
-        // Add the selection series to the graph again
-        distributionData.addSeries(selectedIntervalSeries);
+        markSelectedPulseLengthInterval(minLength, maxLength);
 
         // Check what kind of data we have, if it is only pulses, generate from them
         // and if we have samples, then generate from the samples
@@ -483,6 +474,19 @@ public class RawSignalWindow {
 
         // Add the selection series to the graph again
         signalSeriesCollection.addSeries(selectedPulseSeries);
+    }
+
+    private void markSelectedPulseLengthInterval(double minLength, double maxLength) {
+        selectedIntervalSeries.clear();
+
+        // Mark the selected region in the pulse distribution graph
+        selectedIntervalSeries.add(((int) (minLength / 10)) * 10, 0);
+        selectedIntervalSeries.add(((int) (maxLength / 10)) * 10 + 10, 0);
+        selectedIntervalSeries.add(Float.NaN, Float.NaN);
+
+
+        // Add the selection series to the graph again
+        distributionData.addSeries(selectedIntervalSeries);
     }
 
     /**
