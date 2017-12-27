@@ -10,7 +10,6 @@ public class PulseLengthAnalyzer {
     private double pulseLengths[];
     private int readPos;
     private int writePos;
-    private long totalCount;
 
     public PulseLengthAnalyzer(int size) {
         this.size = size;
@@ -26,7 +25,6 @@ public class PulseLengthAnalyzer {
     }
 
     public void addPulse(double pulseLength, boolean isMark) {
-        totalCount++;
         if (count < size) {
             count++;
         } else {
@@ -131,6 +129,12 @@ public class PulseLengthAnalyzer {
 
     private boolean isMarkPulse(double pulseLength) {
         return pulseLength >= 0;
+    }
+
+    public void clear() {
+        count = 0;
+        readPos = 0;
+        writePos = 0;
     }
 
     public static class Pulse {

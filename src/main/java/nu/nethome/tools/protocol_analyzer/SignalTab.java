@@ -137,8 +137,8 @@ public class SignalTab {
                 if ((pulse >= (minLength - 0.5)) && (pulse <= (maxLength + 0.5)) && (isMark == level)) {
                     // If it does, plot the pulse
                     //m_SelectedPulseSeries.add(Double.NaN, Double.NaN);
-                    selectedPulseSeries.add(lastX, SELECTION_MARK);
-                    selectedPulseSeries.add(x, SELECTION_MARK);
+                    selectedPulseSeries.add(lastX / 1000, SELECTION_MARK);
+                    selectedPulseSeries.add(x / 1000, SELECTION_MARK);
                     selectedPulseSeries.add(Double.NaN, Double.NaN);
                 }
                 lastX = x;

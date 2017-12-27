@@ -6,7 +6,7 @@ import nu.nethome.util.ps.ProtocolInfo;
 
 public class PulseLengthFilter implements ProtocolDecoder {
 
-    private static final int BUFFER_SIZE = 25;
+    private static final int BUFFER_SIZE = 26;
     private static final int PULSES_BACK = 20;
     private static final PulseLengthAnalyzer.PulseRequirements openReq =
             new PulseLengthAnalyzer.PulseRequirements(PULSES_BACK, 130.0, 2, 2, false);
@@ -38,6 +38,7 @@ public class PulseLengthFilter implements ProtocolDecoder {
         } else {
             if ((!analyzer.vetPulses(closeReq)) && !state) {
                 pulseLength = 29000 + 1;
+                analyzer.clear();
             }
             result = downStream.parse(pulseLength, state);
             if (pulseLength > 29000) {
